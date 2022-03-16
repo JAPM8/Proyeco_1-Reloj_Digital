@@ -1,0 +1,491 @@
+%CMF
+# %PSECTS Section
+# For each object file, details of its psects are enumerated here.
+# The begining of the section is indicated by %PSECTS.  The first
+# line indicates the name of the first object file, e.g.
+#    $foo.obj
+# Each line that follows describes a psect in that object file, until
+# the next object file.  The lines that describe a psect have the
+# format:
+#    <psect name> <class name> <space> <link address> <load addresses> <length> <delta> <reloc>
+# All addresses and the length are given in unqualified hexadecimal
+# in delta units.  Any other numeric values are decimal.
+%PSECTS
+$build/default/debug/main.o
+resVect CODE 0 0 0 9A 2 1
+code CODE 0 0 0 1E4 2 1
+udata_bank0 BANK0 1 20 20 E 1 1
+udata_shr COMMON 1 70 70 2 1 1
+config CONFIG 4 2007 2007 2 2 1
+# %UNUSED Section
+# This section enumerates the unused ranges of each CLASS. Each entry
+# is described on a single line as follows:
+#    <class name> <range> <delta>
+# Addresses given in the range are in hexadecimal and units of delta.
+%UNUSED
+RAM 2E-6F 1
+RAM A0-EF 1
+RAM 110-16F 1
+RAM 190-1EF 1
+BANK0 2E-6F 1
+BANK1 A0-EF 1
+BANK2 110-16F 1
+BANK3 190-1EF 1
+CONST 1E4-1FFF 2
+ENTRY 1E4-1FFF 2
+IDLOC 2000-2003 2
+CODE 1E4-1FFF 2
+COMMON 72-7F 1
+EEDATA 2100-21FF 2
+STRCODE 1E4-1FFF 2
+STRING 1E4-1FFF 2
+# %LINETAB Section
+# This section enumerates the file/line to address mappings.
+# The beginning of the section is indicated by %LINETAB.
+# The first line indicates the name of the first object file, e.g.
+#   $foo.obj
+# Each line that follows describes a single mapping until the next
+# object file.  Mappings have the following format:
+#    <address> <psect name> <class name> ><line number>:<file name>
+# The address is absolute and given given in unqualified hex 
+# in delta units of the psect. All mappings within an object file
+# are in ascending order of addresses.
+# All other numeric values are in decimal.
+%LINETAB
+$build/default/debug/main.o
+0 resVect CODE >124:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+0 resVect CODE >128:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+2 resVect CODE >129:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+3 resVect CODE >134:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+4 resVect CODE >136:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+5 resVect CODE >137:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+6 resVect CODE >138:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+7 resVect CODE >141:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+8 resVect CODE >142:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+9 resVect CODE >144:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+A resVect CODE >145:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+B resVect CODE >147:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+C resVect CODE >148:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+D resVect CODE >150:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+E resVect CODE >151:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+F resVect CODE >154:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+10 resVect CODE >155:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+11 resVect CODE >156:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+12 resVect CODE >157:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+13 resVect CODE >159:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+14 resVect CODE >165:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+15 resVect CODE >166:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+16 resVect CODE >168:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+17 resVect CODE >169:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+18 resVect CODE >171:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+19 resVect CODE >172:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A resVect CODE >174:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B resVect CODE >176:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C resVect CODE >179:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D resVect CODE >180:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1E resVect CODE >181:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1F resVect CODE >182:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+20 resVect CODE >183:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+21 resVect CODE >185:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+22 resVect CODE >188:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+23 resVect CODE >189:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+24 resVect CODE >190:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+25 resVect CODE >191:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+26 resVect CODE >192:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+27 resVect CODE >194:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+28 resVect CODE >197:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+29 resVect CODE >198:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+2A resVect CODE >199:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+2B resVect CODE >200:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+2C resVect CODE >201:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+2D resVect CODE >203:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+2E resVect CODE >206:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+30 resVect CODE >206:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+31 resVect CODE >206:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+32 resVect CODE >206:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+33 resVect CODE >208:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+34 resVect CODE >210:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+35 resVect CODE >213:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+36 resVect CODE >214:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+37 resVect CODE >215:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+38 resVect CODE >216:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+39 resVect CODE >220:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+3A resVect CODE >221:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+3B resVect CODE >222:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+3C resVect CODE >223:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+3D resVect CODE >224:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+3E resVect CODE >225:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+3F resVect CODE >226:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+40 resVect CODE >227:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+41 resVect CODE >230:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+42 resVect CODE >231:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+43 resVect CODE >234:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+44 resVect CODE >236:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+45 resVect CODE >237:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+46 resVect CODE >239:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+47 resVect CODE >242:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+48 resVect CODE >243:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+49 resVect CODE >246:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+4A resVect CODE >247:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+4B resVect CODE >248:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+4C resVect CODE >250:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+4D resVect CODE >253:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+4E resVect CODE >254:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+4F resVect CODE >257:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+50 resVect CODE >259:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+51 resVect CODE >260:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+52 resVect CODE >262:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+53 resVect CODE >265:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+54 resVect CODE >266:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+55 resVect CODE >269:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+56 resVect CODE >271:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+57 resVect CODE >272:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+58 resVect CODE >274:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+59 resVect CODE >277:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+5B resVect CODE >277:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+5C resVect CODE >277:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+5D resVect CODE >277:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+5E resVect CODE >277:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+5F resVect CODE >277:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+60 resVect CODE >279:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+61 resVect CODE >280:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+62 resVect CODE >281:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+63 resVect CODE >282:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+64 resVect CODE >283:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+65 resVect CODE >284:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+66 resVect CODE >286:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+67 resVect CODE >289:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+68 resVect CODE >290:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+69 resVect CODE >291:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+6A resVect CODE >292:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+6B resVect CODE >293:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+6C resVect CODE >294:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+6D resVect CODE >295:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+6E resVect CODE >296:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+6F resVect CODE >298:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+70 resVect CODE >299:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+71 resVect CODE >300:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+72 resVect CODE >301:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+73 resVect CODE >302:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+74 resVect CODE >303:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+75 resVect CODE >305:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+76 resVect CODE >308:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+77 resVect CODE >309:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+78 resVect CODE >310:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+79 resVect CODE >311:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+7A resVect CODE >312:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+7B resVect CODE >313:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+7C resVect CODE >314:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+7D resVect CODE >316:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+7E resVect CODE >317:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+7F resVect CODE >318:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+80 resVect CODE >319:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+81 resVect CODE >321:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+82 resVect CODE >324:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+83 resVect CODE >325:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+84 resVect CODE >326:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+85 resVect CODE >327:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+86 resVect CODE >329:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+87 resVect CODE >332:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+88 resVect CODE >333:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+89 resVect CODE >334:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+8A resVect CODE >335:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+8B resVect CODE >338:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+8C resVect CODE >341:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+8D resVect CODE >342:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+8E resVect CODE >343:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+8F resVect CODE >344:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+90 resVect CODE >345:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+91 resVect CODE >346:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+92 resVect CODE >347:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+93 resVect CODE >349:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+94 resVect CODE >352:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+95 resVect CODE >353:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+96 resVect CODE >354:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+97 resVect CODE >356:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+98 resVect CODE >359:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+99 resVect CODE >361:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+0 code CODE >365:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+100 code CODE >372:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+101 code CODE >373:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+102 code CODE >374:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+103 code CODE >375:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+104 code CODE >376:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+105 code CODE >377:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+106 code CODE >378:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+107 code CODE >379:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+108 code CODE >380:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+109 code CODE >381:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+10A code CODE >382:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+10B code CODE >383:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+10C code CODE >384:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+10D code CODE >385:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+10E code CODE >386:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+10F code CODE >387:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+110 code CODE >388:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+111 code CODE >389:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+112 code CODE >390:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+113 code CODE >391:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+114 code CODE >395:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+115 code CODE >397:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+116 code CODE >399:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+117 code CODE >401:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+118 code CODE >403:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+119 code CODE >405:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+11A code CODE >407:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+11B code CODE >409:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+11D code CODE >410:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+11E code CODE >411:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+11F code CODE >412:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+120 code CODE >413:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+121 code CODE >414:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+122 code CODE >415:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+123 code CODE >416:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+124 code CODE >417:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+125 code CODE >418:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+126 code CODE >419:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+127 code CODE >420:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+128 code CODE >423:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+129 code CODE >424:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+12A code CODE >425:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+12B code CODE >426:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+12C code CODE >427:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+12D code CODE >429:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+12E code CODE >430:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+12F code CODE >431:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+130 code CODE >432:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+131 code CODE >433:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+132 code CODE >435:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+133 code CODE >436:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+134 code CODE >437:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+135 code CODE >438:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+136 code CODE >439:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+137 code CODE >441:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+138 code CODE >442:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+139 code CODE >443:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+13A code CODE >444:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+13B code CODE >445:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+13C code CODE >447:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+13D code CODE >454:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+13F code CODE >456:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+140 code CODE >457:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+141 code CODE >458:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+142 code CODE >459:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+143 code CODE >460:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+144 code CODE >461:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+145 code CODE >463:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+146 code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+147 code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+148 code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+149 code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+14A code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+14B code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+14C code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+14D code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+14E code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+14F code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+150 code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+151 code CODE >464:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+152 code CODE >466:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+153 code CODE >469:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+155 code CODE >471:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+156 code CODE >472:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+157 code CODE >473:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+158 code CODE >474:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+159 code CODE >475:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+15A code CODE >476:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+15B code CODE >478:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+15C code CODE >481:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+15E code CODE >483:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+15F code CODE >484:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+160 code CODE >485:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+161 code CODE >486:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+162 code CODE >487:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+163 code CODE >488:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+164 code CODE >490:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+165 code CODE >493:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+167 code CODE >495:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+168 code CODE >496:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+169 code CODE >497:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+16A code CODE >498:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+16B code CODE >499:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+16C code CODE >500:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+16D code CODE >502:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+16E code CODE >509:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+170 code CODE >510:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+171 code CODE >511:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+172 code CODE >513:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+174 code CODE >514:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+175 code CODE >516:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+177 code CODE >517:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+178 code CODE >518:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+179 code CODE >519:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+17A code CODE >520:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+17B code CODE >521:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+17C code CODE >523:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+17E code CODE >524:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+17F code CODE >526:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+180 code CODE >527:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+182 code CODE >528:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+183 code CODE >529:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+184 code CODE >530:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+185 code CODE >531:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+186 code CODE >532:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+187 code CODE >534:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+189 code CODE >535:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+18A code CODE >537:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+18C code CODE >538:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+18D code CODE >539:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+18E code CODE >540:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+18F code CODE >541:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+190 code CODE >543:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+192 code CODE >544:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+193 code CODE >545:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+194 code CODE >546:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+195 code CODE >547:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+196 code CODE >558:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+197 code CODE >561:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+199 code CODE >562:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+19A code CODE >565:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+19B code CODE >566:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+19C code CODE >567:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+19D code CODE >569:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+19E code CODE >572:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A0 code CODE >573:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A1 code CODE >574:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A2 code CODE >576:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A3 code CODE >577:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A4 code CODE >578:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A5 code CODE >580:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A7 code CODE >580:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A8 code CODE >580:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1A9 code CODE >580:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1AA code CODE >582:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1AB code CODE >585:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1AD code CODE >586:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1AE code CODE >587:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1AF code CODE >589:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B0 code CODE >590:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B1 code CODE >592:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B2 code CODE >593:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B3 code CODE >595:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B5 code CODE >595:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B6 code CODE >595:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B7 code CODE >595:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B8 code CODE >595:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1B9 code CODE >595:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1BA code CODE >597:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1BB code CODE >600:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1BD code CODE >601:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1BE code CODE >602:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1BF code CODE >605:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C1 code CODE >606:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C2 code CODE >607:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C3 code CODE >608:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C4 code CODE >609:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C5 code CODE >611:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C6 code CODE >612:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C7 code CODE >613:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C8 code CODE >614:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1C9 code CODE >616:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1CA code CODE >618:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1CB code CODE >621:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1CD code CODE >622:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1CE code CODE >623:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1CF code CODE >625:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D1 code CODE >626:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D2 code CODE >627:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D3 code CODE >628:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D4 code CODE >630:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D5 code CODE >631:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D6 code CODE >633:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D7 code CODE >634:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D8 code CODE >635:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1D9 code CODE >637:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1DA code CODE >640:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1DC code CODE >641:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1DD code CODE >642:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1DE code CODE >643:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1DF code CODE >645:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1E1 code CODE >646:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1E2 code CODE >647:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+1E3 code CODE >649:C:\Users\javyp\OneDrive\Documentos\UNIVERSIDAD\Progra_MICROS\Proyecto 1\Reloj_Digital.X\main.s
+# %SYMTAB Section
+# An enumeration of all symbols in the program.
+# The beginning of the section is indicated by %SYMTAB.
+# Each line describes a single symbol as follows:
+#    <label> <value> [-]<load-adj> <class> <space> <psect> <file-name>
+# The value and load-adj are both in unqualified hexadecimal.
+# All other numeric values are in decimal.  The load-adj is the
+# quantity one needs to add to the symbol value in order to obtain the load
+# address of the symbol.  This value may be signed. If the symbol
+# was defined in a psect then <psect> will be "-". File-name
+# is the name of the object file in which the symbol was defined.
+%SYMTAB
+__Hspace_0 1E4 0 ABS 0 - -
+__Hspace_1 72 0 ABS 0 - -
+__Hspace_3 0 0 ABS 0 - -
+__Hspace_4 4010 0 ABS 0 - -
+__Hudata_bank0 0 0 ABS 0 udata_bank0 -
+__Hudata_bank1 0 0 ABS 0 udata_bank1 -
+__Hudata_bank2 0 0 ABS 0 udata_bank2 -
+__Hudata_bank3 0 0 ABS 0 udata_bank3 -
+__LresVect 0 0 ABS 0 resVect -
+__Hedata 0 0 ABS 0 edata -
+__Hudata 0 0 ABS 0 udata -
+__Hconfig 4012 0 CONFIG 4 config -
+__Ledata 0 0 ABS 0 edata -
+__Ludata 0 0 ABS 0 udata -
+__Hcode 0 0 ABS 0 code -
+__Hdata 0 0 ABS 0 data -
+__Lcode 0 0 ABS 0 code -
+__Ldata 0 0 ABS 0 data -
+__S0 0 0 ABS 0 - -
+__S1 72 0 ABS 0 - -
+__S3 0 0 ABS 0 - -
+__HresVect 0 0 ABS 0 resVect -
+__Lconfig 0 0 CONFIG 4 config -
+__Lspace_0 0 0 ABS 0 - -
+__Lspace_1 0 0 ABS 0 - -
+__Lspace_3 0 0 ABS 0 - -
+__Lspace_4 0 0 ABS 0 - -
+__Ludata_bank0 0 0 ABS 0 udata_bank0 -
+__Ludata_bank1 0 0 ABS 0 udata_bank1 -
+__Ludata_bank2 0 0 ABS 0 udata_bank2 -
+__Ludata_bank3 0 0 ABS 0 udata_bank3 -
+__Hudata_shr 0 0 ABS 0 udata_shr -
+__Ludata_shr 0 0 ABS 0 udata_shr -
+# %SPLITSTAB Section
+# This section enumerates all the psect splits performed by the assembler.
+# The beginning of the section is indicated by %SPLITSTAB.
+# Each line is a record a particular split, where the parent psect is on
+# the left and the child on the right.  Note that a child psect is always
+# split form the top of the parent psect. All splits from a given parent
+# are listed in the order in which they occurred.
+%SPLITSTAB
+# %DABS Section
+# This section contains a table of all usuage of the assember
+# directive DABS in the program. Each line has the following format:
+#   <name> <space> <address> <size>
+# If the DABS was originally labelled then that shall be <name>,
+# otherwise name will be "-".  The <space> number is in decimal.
+# <address> and <size> are in byte units as unqaulified hexadecimal
+%DABS
+# %SEGMENTS Section
+# This sections enumerates the segments of the program.  Each segment
+# is described on a single line as follows:
+#    <name> <space> <link address> <file address> <size> <delta>
+# Addresses and size are in unqualified hexadecimal.  The link address
+# and size are in units of delta. The file address is in units of bytes.
+# All other numeric quantities are in decimal.
+%SEGMENTS
+udata_bank0 1 20 20 E 1
+udata_shr 1 70 70 2 1
+# %NOTES Section
+# This section contains data of all the note-psects.  The beginning of the section
+# is indicated by %NOTES. The first line indicates the name and decimal
+# byte-length of the first note-psect, e.g.
+#   $codecov_info_hdr 16
+# Each line that follows contains the byte-data of the psect in hexadecimal as a
+# space-separated list. These lines are limited to 16 bytes of data.
+%NOTES
