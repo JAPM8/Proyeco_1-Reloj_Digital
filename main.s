@@ -101,36 +101,43 @@ SEL_DISPLAY MACRO DISP1, DISP2, DISP3, DISP4
 ;                           VARIABLES UTILIZADAS
 ;-------------------------------------------------------------------------------
 PSECT udata_shr		      ; Common memory
-   W_TEMP:	DS 1	      ; 1 Byte
-   STATUS_TEMP: DS 1	      ; 1 Byte
+   W_TEMP:		DS 1	      ; 1 Byte
+   STATUS_TEMP:		DS 1	      ; 1 Byte
 
 PSECT udata_bank0
-    MODO:	DS 1	      ; 1 Byte
-    ST_SET:	DS 1	      ; 1 Byte
-    ST_INICIAR: DS 1	      ; 1 Byte
+    MODO:		DS 1	      ; 1 Byte
+    ST_SET:		DS 1	      ; 1 Byte
+    ST_INICIAR:		DS 1	      ; 1 Byte
     
-    CONT_TMR_1: DS 1	      ; 1 Byte
-    UNIDADES:	DS 1	      ; 1 Byte
-    DECENAS:	DS 1	      ; 1 Byte
-    CENTENAS:	DS 1	      ; 1 Byte
-    MILES:	DS 1	      ; 1 Byte
+    CONT_TMR_1:		DS 1	      ; 1 Byte
+    UNIDADES:		DS 1	      ; 1 Byte
+    DECENAS:		DS 1	      ; 1 Byte
+    CENTENAS:		DS 1	      ; 1 Byte
+    MILES:		DS 1	      ; 1 Byte
+    UNIDADES_TEMP:	DS 1	      ; 1 Byte
+    DECENAS_TEMP:	DS 1	      ; 1 Byte
+    CENTENAS_TEMP:	DS 1	      ; 1 Byte
+    MILES_TEMP:		DS 1	      ; 1 Byte
     
-    MEDIO_SEC:	DS 1	      ; 1 Byte
+    MEDIO_SEC:		DS 1	      ; 1 Byte
+    SEGUNDOS:		DS 1	      ; 1 Byte
     
-    MESES:	DS 1	      ; 1 Byte
-    DIAS:	DS 1	      ; 1 Byte
-    MAX_DIAS:	DS 1	      ; 1 Byte
-    UNIDADES_F: DS 1	      ; 1 Byte
-    DECENAS_F:	DS 1	      ; 1 Byte
-    CENTENAS_F:	DS 1	      ; 1 Byte
-    MILES_F:	DS 1	      ; 1 Byte
-    A_UNIDADES_F:DS 1	      ; 1 Byte
-    A_DECENAS_F:DS 1	      ; 1 Byte
-    A_CENTENAS_F:DS 1	      ; 1 Byte
-    A_MILES_F:	DS 1	      ; 1 Byte
+    MESES:		DS 1	      ; 1 Byte
+    DIAS:		DS 1	      ; 1 Byte
+    A_DIAS:		DS 1	      ; 1 Byte
+    A_MESES:		DS 1	      ; 1 Byte
+    MAX_DIAS:		DS 1	      ; 1 Byte
+    UNIDADES_F:		DS 1	      ; 1 Byte
+    DECENAS_F:		DS 1	      ; 1 Byte
+    CENTENAS_F:		DS 1	      ; 1 Byte
+    MILES_F:		DS 1	      ; 1 Byte
+    A_UNIDADES_F:	DS 1	      ; 1 Byte
+    A_DECENAS_F:	DS 1	      ; 1 Byte
+    A_CENTENAS_F:	DS 1	      ; 1 Byte
+    A_MILES_F:		DS 1	      ; 1 Byte
     
-    BANDERA:	DS 1	      ; 1 Byte 
-    DISPLAY:	DS 4	      ; 4 Byte's
+    BANDERA:		DS 1	      ; 1 Byte 
+    DISPLAY:		DS 4	      ; 4 Byte's
     
 
 
@@ -154,6 +161,7 @@ PUSH:			      ; Se guarda el w
     MOVWF  STATUS_TEMP	      ; Se pasa el registro STATUS a la variable STATUS_TEMP
     
 ISR:			      ; Rutina de interrupción   
+    BANKSEL PORTA
     BTFSC   RBIF	     ; Se verifica la bandera de cambio de estado de PORTB
     CALL    INT_IOCB	     ; Pasamos a subrutina INT_IOCB
     
@@ -201,9 +209,9 @@ INC_INICIAR:
     RETURN
 
 INC_SET:
-    INCF    ST_SET	      ; Se cambia de estado de set MOSTRAR->MINUTOS->HORAS
+    INCF    ST_SET	      ; Se cambia de estado de set MOSTRAR->MINUTOS->HORAS (021)
     MOVF    ST_SET, W
-    SUBLW   4		      ; Se limita a máximo estado 11b
+    SUBLW   3		      ; Se limita a máximo estado 11b
     BTFSC   ZERO
     CLRF    ST_SET
     
@@ -292,14 +300,33 @@ RETURN
 CONT_TMR1:
     RESET_TMR1 0x0B, 0xDC     ; TMR1 a 500 ms
     
-    INCF    CONT_TMR_1	      ; Contador de interrupciones de TMR1
-    MOVF    CONT_TMR_1, W	
-    SUBLW   1		      ; 120 interrupciones de 500 ms equivalen a 1 min ***CAMBIAR***
-    BTFSC   ZERO	      ; Revisión de bandera
-    CALL    INC_MINUTOS	      ; De resultar 0 la resta pasamos a la subrutina de incremento de minutos
     CALL    LED_INTERMITENCIA ; Sin importar operación anterior, nos interesa que cada 500 ms parpadeen los leds entre display    
     
+    INCF    CONT_TMR_1	      ; Contador de interrupciones de TMR1
+    MOVF    CONT_TMR_1, W	
+    SUBLW   2		      ; 120 interrupciones de 500 ms equivalen a 1 min ***CAMBIAR***
+    BTFSC   ZERO	      ; Revisión de bandera
+    CALL    INC_MINUTOS	      ; De resultar 0 la resta pasamos a la subrutina de incremento de minutos
+    
     RETURN
+    
+LED_INTERMITENCIA:
+    INCF    MEDIO_SEC	      ; Contador de medios segundos
+    BSF	    PORTA, LED_PUNTO1 ; Se encienden 2 puntos del reloj
+    BSF	    PORTA, LED_PUNTO2
+    MOVF    MEDIO_SEC, W
+    SUBLW   2		      
+    BTFSC   ZERO
+    GOTO    NEG_INTERMITENCIA ; Luego de 2 repeticiones apagamos 2 puntos
+    
+    RETURN
+ 
+NEG_INTERMITENCIA:
+    CLRF    MEDIO_SEC
+    BCF	    PORTA, LED_PUNTO1 ; Se apagan 2 puntos del reloj
+    BCF	    PORTA, LED_PUNTO2
+    
+    RETURN 
     
 INC_MINUTOS:
     CLRF    CONT_TMR_1
@@ -402,28 +429,11 @@ INC_MES:
     CLRF    DECENAS_F
     
     RETURN   
-    
-LED_INTERMITENCIA:
-    INCF    MEDIO_SEC	      ; Contador de medios segundos
-    BSF	    PORTA, LED_PUNTO1 ; Se encienden 2 puntos del reloj
-    BSF	    PORTA, LED_PUNTO2
-    MOVF    MEDIO_SEC, W
-    SUBLW   2		      
-    BTFSC   ZERO
-    GOTO    NEG_INTERMITENCIA ; Luego de 2 repeticiones apagamos 2 puntos
-    
-    RETURN
- 
-NEG_INTERMITENCIA:
-    CLRF    MEDIO_SEC
-    BCF	    PORTA, LED_PUNTO1 ; Se apagan 2 puntos del reloj
-    BCF	    PORTA, LED_PUNTO2
-    
-    RETURN
-    
+       
 CONT_TMR2:
     BCF TMR2IF
-    
+    ; Para timer
+    ;INCF    SEGUNDOS
     RETURN
     
 ; CONFIG uCS
@@ -523,6 +533,13 @@ main:
     BSF	    CENTENAS_F, 0     ; No hay mes cero (se inicia en mes 1)
     CLRF    MILES_F
    
+    CLRF    A_MESES	      ; Variables de día y mes anterior 31/12
+    CLRF    A_DIAS
+    MOVLW   12
+    MOVWF   A_MESES
+    MOVLW   32
+    MOVWF   A_DIAS
+    
     CLRF    A_UNIDADES_F      ; Se configura día 31 como día anterior
     BSF	    A_UNIDADES_F, 0
     CLRF    A_DECENAS_F
@@ -533,9 +550,12 @@ main:
     CLRF    A_MILES_F
     BSF	    A_MILES_F, 1
     
-    
-
 LOOP_FSM:
+    BANKSEL IOCB
+    BTFSS   IOCB, BT_MODO     ; Se habilita botón de modo pues se deshabilita al editar
+    BSF	    IOCB, BT_MODO
+    
+    BANKSEL PORTA
     MOVF    MODO, W	      ; Movemos el valor de estado en el que se encuentra
     BCF	    ZERO
     XORLW   0	              ; Lógica de XOR: val iguales activa ZERO flag
@@ -567,23 +587,143 @@ LOOP_FSM:
 ;-------------------------------------------------------------------------------
 
 HORA:
-    BANKSEL PORTA
+    BANKSEL T1CON
+    BTFSS   TMR1ON	      ; Se verifica que se encuentre encendido el TMR1
+    BSF	    TMR1ON
     
+    BANKSEL PORTA
     BSF	    PORTA, LED_HORA   ; Se enciende Led indicador de modo
     BCF	    PORTA, LED_FECHA
     BCF	    PORTA, LED_TEMP
     BCF	    PORTA, LED_ALARM
     BCF	    PORTA, LED_DISP1
-    BCF	    PORTA, LED_DISP1
+    BCF	    PORTA, LED_DISP2
     
     CLRF    DISPLAY
-    SEL_DISPLAY UNIDADES, DECENAS, CENTENAS, MILES	; Macro para configuración de displays
+    SEL_DISPLAY UNIDADES, DECENAS, CENTENAS, MILES	; Macro para configuración de displays (HORA:MINUTOS)
+    
+    MOVF    ST_SET, W
+    BCF	    ZERO
+    XORLW   1		
+    BTFSC   ZERO
+    GOTO    EDIT_MIN	      ; Se pasa a modo edición de minutos
+    
+    MOVF    ST_SET, W
+    BCF	    ZERO
+    XORLW   2		
+    BTFSC   ZERO	      
+    GOTO    EDIT_HRS	      ; Se pasa a modo edición de horas
     
     GOTO LOOP_FSM
     
-FECHA:
-    BANKSEL PORTA
+EDIT_MIN:
+    BANKSEL IOCB
+    BCF	    IOCB, BT_MODO     ; Se deshabilita cambio de modo
     
+    BANKSEL T1CON
+    BCF	    TMR1ON	      ; Se pausa TMR1
+    
+    BSF	    PORTA, LED_DISP1  ; Se enciende led de edición para primer display
+    BCF	    PORTA, LED_DISP2
+    
+    BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
+    GOTO    ANTIREB_MIN	       ; Se pasa a anti-rebote e incremento de minutos
+    ;BTFSS   PORTB, BT_DOWN    ; Se verifica si se encuentra presionado botón de display up
+    ;GOTO    ANTIREB_MIN2      ; Se pasa a anti-rebote Y decremento de minutos
+    
+    CLRF    DISPLAY
+    SEL_DISPLAY UNIDADES, DECENAS, CENTENAS, MILES	; Macro para configuración de displays (HORA:MINUTOS)
+    
+    MOVF    ST_SET, W
+    BCF	    ZERO
+    XORLW   2		
+    BTFSC   ZERO	      
+    GOTO    EDIT_HRS	      ; Se pasa a modo edición de horas    
+    
+    GOTO    EDIT_MIN
+    
+ANTIREB_MIN:
+    BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
+    GOTO    $-1
+    CALL    INC_MIN	      ; Se incrementa min
+    
+    GOTO    EDIT_MIN
+    
+INC_MIN:
+    INCF    UNIDADES	      ; Se incrementa unidades de minuto
+    MOVF    UNIDADES, W	      
+    SUBLW   10
+    BTFSC   ZERO	      ; Se revisa si ya nos encontramos en 10 unidades
+    CLRF    UNIDADES
+    BTFSC   ZERO
+    INCF    DECENAS	      ; Se incrementa decenas de minuto 
+    
+    MOVF    DECENAS, W
+    SUBLW   6
+    BTFSC   ZERO	      ; Se revisa si ya nos encontramos en 6 decenas
+    CLRF    DECENAS
+        
+    RETURN 
+    
+EDIT_HRS:
+    BANKSEL IOCB
+    BCF	    IOCB, BT_MODO     ; Se deshabilita cambio de modo
+    
+    BANKSEL T1CON
+    BCF	    TMR1ON	      ; Se pausa TMR1
+    
+    BCF	    PORTA, LED_DISP1  ; Se enciende led de edición para primer display
+    BSF	    PORTA, LED_DISP2
+    
+    BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
+    GOTO    ANTIREB_HRS
+    
+    CLRF    DISPLAY
+    SEL_DISPLAY UNIDADES, DECENAS, CENTENAS, MILES	; Macro para configuración de displays (HORA:MINUTOS)
+    
+    MOVF    ST_SET, W	
+    BTFSC   ZERO	      
+    GOTO    HORA	      ; Se pasa a modo mostrar hora
+    
+    GOTO    EDIT_HRS
+
+ANTIREB_HRS:
+    BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
+    GOTO    $-1
+    CALL    INC_HRS	      ; Se incrementa min
+    
+    GOTO    EDIT_HRS
+    
+INC_HRS:
+    INCF    CENTENAS	      ; Se incrementa centenas (unidades de hora)
+    MOVF    CENTENAS, W
+    SUBLW   10
+    BTFSC   ZERO
+    CLRF    CENTENAS	      ; Se revisa si ya nos encontramos en 10 centenas
+    BTFSC   ZERO
+    INCF    MILES	      ; Se incrementa miles (decenas de hora)
+    
+    MOVF    MILES, W	      ; Se verifica overflow de horas (reinicio a las 24 hrs)
+    SUBLW   2
+    BTFSC   ZERO
+    GOTO    $+2
+    RETURN
+    
+    MOVF    CENTENAS, W
+    SUBLW   4
+    BTFSC   ZERO
+    CLRF    CENTENAS
+    BTFSC   ZERO
+    CLRF    MILES
+        
+    RETURN
+    
+FECHA:
+    BANKSEL T1CON
+    BTFSS   TMR1ON	      ; Se verifica que se encuentre encendido el TMR1
+    BSF	    TMR1ON
+    
+    BANKSEL PORTA
     BCF	    PORTA, LED_HORA   ; Se enciende Led indicador de modo
     BSF	    PORTA, LED_FECHA
     BCF	    PORTA, LED_TEMP
@@ -592,13 +732,16 @@ FECHA:
     BCF	    PORTA, LED_DISP1
     
     CLRF    DISPLAY
-    SEL_DISPLAY UNIDADES_F, DECENAS_F, CENTENAS_F, MILES_F ; Macro para configuración de displays
+    SEL_DISPLAY CENTENAS_F, MILES_F, UNIDADES_F, DECENAS_F ; Macro para configuración de displays (día/mes)
     
     GOTO LOOP_FSM
     
 TIMER:
-    BANKSEL PORTA
+    BANKSEL T1CON
+    BTFSS   TMR1ON	      ; Se verifica que se encuentre encendido el TMR1
+    BSF	    TMR1ON
     
+    BANKSEL PORTA
     BCF	    PORTA, LED_HORA   ; Se enciende Led indicador de modo
     BCF	    PORTA, LED_FECHA
     BSF	    PORTA, LED_TEMP
@@ -609,8 +752,11 @@ TIMER:
     GOTO LOOP_FSM
     
 ALARMA:
-    BANKSEL PORTA
+    BANKSEL T1CON
+    BTFSS   TMR1ON	      ; Se verifica que se encuentre encendido el TMR1
+    BSF	    TMR1ON
     
+    BANKSEL PORTA
     BCF	    PORTA, LED_HORA   ; Se enciende Led indicador de modo
     BCF	    PORTA, LED_FECHA
     BCF	    PORTA, LED_TEMP
