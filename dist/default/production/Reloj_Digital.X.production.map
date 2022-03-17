@@ -5,7 +5,7 @@ Linker command line:
 -W-3 --edf=C:\Program Files\Microchip\xc8\v2.35\pic\dat\en_msgs.txt -cs \
   -h+dist/default/production\Reloj_Digital.X.production.sym \
   --cmf=dist/default/production\Reloj_Digital.X.production.cmf -z -Q16F887 \
-  -oC:\Users\javyp\AppData\Local\Temp\xcAse8.4 -ver=XC8 PIC(R) Assembler \
+  -oC:\Users\javyp\AppData\Local\Temp\xcAs3is.4 -ver=XC8 PIC(R) Assembler \
   -Mdist/default/production/Reloj_Digital.X.production.map -E1 --acfsm=1493 \
   -ACODE=00h-07FFhx4 -ASTRCODE=00h-01FFFh -ASTRING=00h-0FFhx32 \
   -ACONST=00h-0FFhx32 -AENTRY=00h-0FFhx32 -ACOMMON=070h-07Fh \
@@ -27,14 +27,14 @@ Machine type is 16F887
 build/default/production/main.o
                 config                             2007     2007        2        0       4
                 resVect                               0        0       C3        0       0
-                code                                  0        0      377        0       0
+                code                                  0        0      3FD        0       0
                 udata_bank0                          20       20       20       20       1
                 udata_shr                            70       70        2       70       1
 
 TOTAL           Name                               Link     Load   Length     Space
         CLASS   CODE           
                 resVect                               0        0       C3         0
-                code                                  0        0      377         0
+                code                                  0        0      3FD         0
 
         CLASS   STRCODE        
 
@@ -90,24 +90,24 @@ UNUSED ADDRESS RANGES
         BANK1            00A0-00EF             50           1
         BANK2            0110-016F             60           1
         BANK3            0190-01EF             60           1
-        CODE             0377-1FFF            800           2
+        CODE             03FD-1FFF            800           2
         COMMON           0072-007F              E           1
-        CONST            0377-1FFF            100           2
+        CONST            03FD-1FFF            100           2
         EEDATA           2100-21FF            100           2
-        ENTRY            0377-1FFF            100           2
+        ENTRY            03FD-1FFF            100           2
         IDLOC            2000-2003              4           2
         RAM              0040-006F             30           1
                          00A0-00EF             50
                          0110-016F             60
                          0190-01EF             60
-        STRCODE          0377-1FFF           1C89           2
-        STRING           0377-1FFF            100           2
+        STRCODE          03FD-1FFF           1C03           2
+        STRING           03FD-1FFF            100           2
 
                                   Symbol Table
 
 __Hcode        code        0000  __Hconfig      config      2009
 __Hdata        data        0000  __Hedata       edata       0000
-__HresVect     resVect     0000  __Hspace_0     (abs)       0377
+__HresVect     resVect     0000  __Hspace_0     (abs)       03FD
 __Hspace_1     (abs)       0072  __Hspace_3     (abs)       0000
 __Hspace_4     (abs)       4010  __Hudata       udata       0000
 __Hudata_bank0 udata_bank0 0000  __Hudata_bank1 udata_bank1 0000

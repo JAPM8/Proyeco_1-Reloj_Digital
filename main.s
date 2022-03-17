@@ -562,19 +562,19 @@ LOOP_FSM:
     BTFSC   ZERO
     GOTO    HORA	      ; Se pasa a modo hora donde se mostrará o editará
     
-    MOVF    MODO, W
+    MOVF    MODO, W	      ; Movemos el valor de estado en el que se encuentra
     BCF	    ZERO
     XORLW   1		
     BTFSC   ZERO
     GOTO    FECHA	      ; Se pasa a modo fecha donde se mostrará o editará
     
-    MOVF    MODO, W
+    MOVF    MODO, W           ; Movemos el valor de estado en el que se encuentra
     BCF	    ZERO
     XORLW   2		
     BTFSC   ZERO	      
     GOTO    TIMER	      ; Se pasa a modo timer donde se mostrará, configurará y activará
     
-    MOVF    MODO, W
+    MOVF    MODO, W           ; Movemos el valor de estado en el que se encuentra
     BCF	    ZERO
     XORLW   3		
     BTFSC   ZERO
@@ -602,13 +602,13 @@ HORA:
     CLRF    DISPLAY
     SEL_DISPLAY UNIDADES, DECENAS, CENTENAS, MILES	; Macro para configuración de displays (HORA:MINUTOS)
     
-    MOVF    ST_SET, W
+    MOVF    ST_SET, W         ; Se revisa el estado de set
     BCF	    ZERO
     XORLW   1		
     BTFSC   ZERO
     GOTO    EDIT_MIN	      ; Se pasa a modo edición de minutos
     
-    MOVF    ST_SET, W
+    MOVF    ST_SET, W	      ; Se revisa el estado de set
     BCF	    ZERO
     XORLW   2		
     BTFSC   ZERO	      
@@ -627,14 +627,14 @@ EDIT_MIN:
     BCF	    PORTA, LED_DISP2
     
     BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
-    GOTO    ANTIREB_MIN	       ; Se pasa a anti-rebote e incremento de minutos
-    ;BTFSS   PORTB, BT_DOWN    ; Se verifica si se encuentra presionado botón de display up
-    ;GOTO    ANTIREB_MIN2      ; Se pasa a anti-rebote Y decremento de minutos
+    GOTO    ANTIREB_MIN	      ; Se pasa a anti-rebote de incremento de minutos
+    BTFSS   PORTB, BT_DOWN    ; Se verifica si se encuentra presionado botón de display down
+    GOTO    ANTIREB_MIN2      ; Se pasa a anti-rebote de decremento de minutos
     
     CLRF    DISPLAY
     SEL_DISPLAY UNIDADES, DECENAS, CENTENAS, MILES	; Macro para configuración de displays (HORA:MINUTOS)
     
-    MOVF    ST_SET, W
+    MOVF    ST_SET, W	      ; Se revisa el estado de set
     BCF	    ZERO
     XORLW   2		
     BTFSC   ZERO	      
@@ -646,6 +646,15 @@ ANTIREB_MIN:
     BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
     GOTO    $-1
     CALL    INC_MIN	      ; Se incrementa min
+    
+    GOTO    EDIT_MIN
+    
+ANTIREB_MIN2:
+    BTFSS   PORTB, BT_DOWN      ; Se verifica si se encuentra presionado botón de display up
+    GOTO    $-1
+    
+    DECF    UNIDADES	      ; Se decrementa unidades de minuto
+    CALL    DEC_MIN	      ; Se pasa a revisar underflow
     
     GOTO    EDIT_MIN
     
@@ -676,7 +685,9 @@ EDIT_HRS:
     BSF	    PORTA, LED_DISP2
     
     BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
-    GOTO    ANTIREB_HRS
+    GOTO    ANTIREB_HRS       ; Se pasa a anti-rebote de incremento de horas
+    BTFSS   PORTB, BT_DOWN    ; Se verifica si se encuentra presionado botón de display down
+    GOTO    ANTIREB_HRS2      ; Se pasa a anti-rebote de decremento de horas
     
     CLRF    DISPLAY
     SEL_DISPLAY UNIDADES, DECENAS, CENTENAS, MILES	; Macro para configuración de displays (HORA:MINUTOS)
@@ -687,12 +698,62 @@ EDIT_HRS:
     
     GOTO    EDIT_HRS
 
+DEC_MIN:
+    BCF	    ZERO
+    MOVLW   -1		      ; Se mueve literal de -1 a W
+    SUBWF   UNIDADES, W	      ; Se verifica si la operación de decremento resulto en -1 (UNIDADES-(-1)=0)
+    BTFSS   ZERO	      ; De activarse la bandera saltamos setear unidades a 9 y dec de Decenas
+    RETURN
+    DECF    DECENAS	      ; DECENAS - 1
+    MOVLW   9
+    MOVWF   UNIDADES	      ; Underflow Unidades 0->9
+    
+    BCF	    ZERO
+    MOVLW   -1		      ; Se mueve literal de -1 a W
+    SUBWF   DECENAS, W	      ; Se verifica si la operación de decremento resulto en -1 (DECENAS-(-1)=0)
+    BTFSS   ZERO	      ; De activarse la bandera saltamos setear decenas a 5
+    RETURN
+    MOVLW   5
+    MOVWF   DECENAS
+    
+    RETURN
+    
 ANTIREB_HRS:
     BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
     GOTO    $-1
     CALL    INC_HRS	      ; Se incrementa min
     
     GOTO    EDIT_HRS
+
+ANTIREB_HRS2:
+    BTFSS   PORTB, BT_DOWN    ; Se verifica si se encuentra presionado botón de display down
+    GOTO    $-1
+    DECF    CENTENAS	      ; Se decrementa unidades de hora
+    CALL    DEC_HRS	      ; Se decrementa min
+    
+    GOTO    EDIT_HRS
+
+DEC_HRS:
+    BCF	    ZERO
+    MOVLW   -1		      ; Se mueve literal de -1 a W
+    SUBWF   CENTENAS, W	      ; Se verifica si la operación de decremento resulto en -1 (CENTENAS-(-1)=0)
+    BTFSS   ZERO	      ; De activarse la bandera saltamos setear CENTENAS a 9 y dec de MILES
+    RETURN
+    DECF    MILES	      ; MILES - 1
+    MOVLW   9
+    MOVWF   CENTENAS	      ; Underflow CENTENAS 0->9
+    
+    BCF	    ZERO
+    MOVLW   -1		      ; Se mueve literal de -1 a W
+    SUBWF   MILES, W	      ; Se verifica si la operación de decremento resulto en -1 (MILES-(-1)=0)
+    BTFSS   ZERO	      ; De activarse la bandera saltamos setear MILES a 2 y CENTENAS A 3
+    RETURN
+    MOVLW   2
+    MOVWF   MILES
+    MOVLW   3
+    MOVWF   CENTENAS
+    
+    RETURN
     
 INC_HRS:
     INCF    CENTENAS	      ; Se incrementa centenas (unidades de hora)
@@ -709,9 +770,9 @@ INC_HRS:
     GOTO    $+2
     RETURN
     
-    MOVF    CENTENAS, W
+    MOVF    CENTENAS, W	      ; Se verifica si unidades de hora igual a 4
     SUBLW   4
-    BTFSC   ZERO
+    BTFSC   ZERO	      ; De serlo se pasa a 00 horas
     CLRF    CENTENAS
     BTFSC   ZERO
     CLRF    MILES
@@ -729,12 +790,111 @@ FECHA:
     BCF	    PORTA, LED_TEMP
     BCF	    PORTA, LED_ALARM
     BCF	    PORTA, LED_DISP1
-    BCF	    PORTA, LED_DISP1
+    BCF	    PORTA, LED_DISP2
     
     CLRF    DISPLAY
     SEL_DISPLAY CENTENAS_F, MILES_F, UNIDADES_F, DECENAS_F ; Macro para configuración de displays (día/mes)
     
+    MOVF    ST_SET, W	      ; Se revisa el estado de set
+    BCF	    ZERO
+    XORLW   1		
+    BTFSC   ZERO
+    GOTO    EDIT_MES	      ; Se pasa a modo edición de minutos
+    
+    MOVF    ST_SET, W	      ; Se revisa el estado de set
+    BCF	    ZERO
+    XORLW   2		
+    BTFSC   ZERO	      
+    GOTO    EDIT_DIAS	      ; Se pasa a modo edición de horas
+    
     GOTO LOOP_FSM
+
+EDIT_MES:
+    BANKSEL IOCB
+    BCF	    IOCB, BT_MODO     ; Se deshabilita cambio de modo
+    
+    BANKSEL T1CON
+    BCF	    TMR1ON	      ; Se pausa TMR1
+    
+    BSF	    PORTA, LED_DISP1  ; Se enciende led de edición para primer display
+    BCF	    PORTA, LED_DISP2
+    
+    BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
+    GOTO    ANTIREB_MES	       ; Se pasa a anti-rebote de incremento de mes
+    BTFSS   PORTB, BT_DOWN    ; Se verifica si se encuentra presionado botón de display down
+    GOTO    ANTIREB_MES2      ; Se pasa a anti-rebote de decremento de minutos
+    
+    CLRF    DISPLAY
+    SEL_DISPLAY CENTENAS_F, MILES_F, UNIDADES_F, DECENAS_F ; Macro para configuración de displays (día/mes)
+    
+    MOVF    ST_SET, W	      ; Se verifica estado de set
+    BCF	    ZERO
+    XORLW   2		
+    BTFSC   ZERO	      
+    GOTO    EDIT_DIAS	      ; Se pasa a modo edición de días    
+    
+    GOTO    EDIT_MES
+
+ANTIREB_MES2:
+    BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
+    GOTO    $-1
+    CALL    INC_MESES	      ; Se incrementa MESES
+    
+    GOTO EDIT_MES
+    
+ANTIREB_MES:
+    BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
+    GOTO    $-1
+    CALL    INC_MESES	      ; Se incrementa MESES
+    
+    GOTO EDIT_MES
+
+INC_MESES:
+    INCF    CENTENAS_F	      ; Se incrementa unidades de mes
+    INCF    MESES	      ; Se incrementan meses
+    MOVF    CENTENAS_F, W	      
+    SUBLW   10
+    BTFSC   ZERO	      ; Se revisa si ya nos encontramos en 10 unidades de mes
+    CLRF    CENTENAS_F
+    BTFSC   ZERO
+    INCF    MILES_F	      ; Se incrementa decenas de minuto 
+    
+    MOVF    MESES, W
+    SUBLW   13
+    BTFSS   ZERO	      ; Se revisa si ya nos encontramos en mes 13   
+    RETURN
+    
+    MOVLW   1
+    MOVWF   MESES
+    CLRF    CENTENAS_F
+    CLRF    MILES_F
+    BSF	    CENTENAS_F, 0
+    
+    RETURN
+    
+EDIT_DIAS:
+    BANKSEL IOCB
+    BCF	    IOCB, BT_MODO     ; Se deshabilita cambio de modo
+    
+    BANKSEL T1CON
+    BCF	    TMR1ON	      ; Se pausa TMR1
+    
+    BCF	    PORTA, LED_DISP1  ; Se enciende led de edición para primer display
+    BSF	    PORTA, LED_DISP2
+    
+    ;BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
+    ;GOTO    ANTIREB_MES	       ; Se pasa a anti-rebote de incremento de mes
+    ;BTFSS   PORTB, BT_DOWN    ; Se verifica si se encuentra presionado botón de display down
+    ;GOTO    ANTIREB_MES2      ; Se pasa a anti-rebote de decremento de minutos
+    
+    CLRF    DISPLAY
+    SEL_DISPLAY CENTENAS_F, MILES_F, UNIDADES_F, DECENAS_F ; Macro para configuración de displays (día/mes)
+    
+    MOVF    ST_SET, W         ; Se verifica estado de set	
+    BTFSC   ZERO	      
+    GOTO    EDIT_DIAS	      ; Se pasa a modo edición de días    
+    
+    GOTO EDIT_DIAS
     
 TIMER:
     BANKSEL T1CON
