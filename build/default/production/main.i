@@ -2551,6 +2551,12 @@ PSECT udata_bank0
     DECENAS: DS 1 ; 1 Byte
     CENTENAS: DS 1 ; 1 Byte
     MILES: DS 1 ; 1 Byte
+
+    CONT_TIMER: DS 1 ; 1 Byte
+    CONT_FIN_ALARMA: DS 1 ; 1 Byte
+    BANDERA_TIMER: DS 1 ; 1 Byte
+    SEGUNDOS_TIMER: DS 1 ; 1 Byte
+    MINUTOS_TIMER: DS 1 ; 1 Byte
     UNIDADES_TEMP: DS 1 ; 1 Byte
     DECENAS_TEMP: DS 1 ; 1 Byte
     CENTENAS_TEMP: DS 1 ; 1 Byte
@@ -2558,6 +2564,8 @@ PSECT udata_bank0
 
     MEDIO_SEC: DS 1 ; 1 Byte
     SEGUNDOS: DS 1 ; 1 Byte
+    DIV: DS 1 ; 1 Byte
+    DIV2: DS 1 ; 1 Byte
 
     MESES: DS 1 ; 1 Byte
     DIAS: DS 1 ; 1 Byte
@@ -2568,10 +2576,6 @@ PSECT udata_bank0
     DECENAS_F: DS 1 ; 1 Byte
     CENTENAS_F: DS 1 ; 1 Byte
     MILES_F: DS 1 ; 1 Byte
-    A_UNIDADES_F: DS 1 ; 1 Byte
-    A_DECENAS_F: DS 1 ; 1 Byte
-    A_CENTENAS_F: DS 1 ; 1 Byte
-    A_MILES_F: DS 1 ; 1 Byte
 
     BANDERA: DS 1 ; 1 Byte
     DISPLAY: DS 4 ; 4 Byte's
@@ -2847,7 +2851,6 @@ REINICIO_RELOJ: ; Limpieza de reloj
 
     RETURN
 
-
 INC_MES:
     INCF MESES
 
@@ -2869,8 +2872,60 @@ INC_MES:
 
 CONT_TMR2:
     BCF ((PIR1) and 07Fh), 1
-    ; Para timer
-    ;INCF SEGUNDOS
+    INCF CONT_TIMER ; Contador de repeticiones del TMR2
+
+    MOVF CONT_TIMER, W ; Contador a W
+    SUBLW 20 ; 20 repeticiones equivalen a 1 segundo
+    BTFSC ((STATUS) and 07Fh), 2
+    CLRF CONT_TIMER ; Reinicio de conteo de int TMR2
+
+    BTFSS ((STATUS) and 07Fh), 2 ; Si existe Zero pasamos a decrementar segundos
+    RETURN
+
+    BTFSS BANDERA_TIMER, 1 ; Bandera que se activa cuando se cumpli
+    DECF SEGUNDOS_TIMER ; Se incrementa contador de segundos
+    MOVF SEGUNDOS_TIMER, W
+
+    BTFSC ((STATUS) and 07Fh), 2
+    CALL DEC_MIN_TIMER ; Se pasa a decrementar segundos
+
+    RETURN
+
+DEC_MIN_TIMER:
+    BTFSC BANDERA_TIMER, 0
+    CALL FIN_T ; Si minutos igual 0 se pasa a esperar 0 seg
+    BTFSC BANDERA_TIMER, 0
+    RETURN
+
+    MOVLW 59
+    MOVWF SEGUNDOS_TIMER ; Underflow segundos (0 a 59)
+
+    DECF MINUTOS_TIMER ; Minutos - 1
+
+    MOVF MINUTOS_TIMER, W ; Minutos a W
+    BTFSC ((STATUS) and 07Fh), 2
+    BSF BANDERA_TIMER, 0 ; Bandera que indica que restan solo 59 sg
+
+    RETURN
+
+FIN_T:
+    MOVF SEGUNDOS_TIMER, W ; Se verifica que segundos sea 0
+    BTFSC ((STATUS) and 07Fh), 2
+    BSF BANDERA_TIMER, 1 ; Bandera indica 00:00
+    BTFSC BANDERA_TIMER, 1
+    CALL ALARMA_TIMER ; Se pasa a activar alarma
+
+    RETURN
+
+ALARMA_TIMER:
+    BSF PORTE, LED_FIN_T ; Se enciende alarma
+
+    INCF CONT_FIN_ALARMA ; Contador de minuto para desactivación de alarma
+    MOVF CONT_FIN_ALARMA, W
+    SUBLW 1200 ; Luego de 1 minuto
+    BTFSC ((STATUS) and 07Fh), 2
+    BCF PORTE, LED_FIN_T ; Se apaga alarma
+
     RETURN
 
 ; CONFIG uCS
@@ -2944,6 +2999,8 @@ main:
 
     BANKSEL PORTA
 
+; Limpieza y asignación de valores iniciales a variables
+
     CLRF MODO
     CLRF ST_SET
     CLRF ST_INICIAR
@@ -2953,7 +3010,6 @@ main:
     CLRF CENTENAS
     CLRF MILES
     CLRF MEDIO_SEC
-    CLRF BANDERA
     CLRF DISPLAY
 
     CLRF DIAS
@@ -2974,6 +3030,18 @@ main:
     CLRF A_DIAS
     MOVLW 32
     MOVWF A_DIAS
+
+    CLRF BANDERA_TIMER
+    CLRF SEGUNDOS_TIMER
+    CLRF MINUTOS_TIMER
+    CLRF UNIDADES_TEMP
+    CLRF DECENAS_TEMP
+    CLRF CENTENAS_TEMP
+    CLRF MILES_TEMP
+    CLRF CONT_FIN_ALARMA
+    CLRF CONT_TIMER
+    CLRF SEGUNDOS_TIMER
+    CLRF MINUTOS_TIMER
 
 LOOP_FSM:
     BANKSEL IOCB
@@ -3372,19 +3440,19 @@ EDIT_DIAS:
 ANTIREB_DIAS:
     BTFSS PORTB, BT_UP ; Se verifica si se encuentra presionado botón de display up
     GOTO $-1
-    CALL INC_DIAS ; Se incrementa días
+    CALL INC_DIAS ; Subrutina incrementa días
 
     GOTO EDIT_MES
 
 ANTIREB_DIAS2:
     BTFSS PORTB, BT_DOWN ; Se verifica si se encuentra presionado botón de display down
     GOTO $-1
-    CALL DEC_DIAS ; Se decrementa días
+    CALL DEC_DIAS ; Subtutina decrementa días
 
     GOTO EDIT_MES
 
 INC_DIAS:
-    INCF DIAS
+    INCF DIAS ; Se incrementa variable días
 
     MOVF DIAS, W
     SUBWF MAX_DIAS, W
@@ -3398,7 +3466,7 @@ INC_DIAS:
     RETURN
 
 DEC_DIAS:
-    DECF DIAS
+    DECF DIAS ; Se decrementa variable días
 
     MOVF DIAS, W
     BTFSC ((STATUS) and 07Fh), 2 ; Si días igual 0
@@ -3411,7 +3479,7 @@ DEC_DIAS:
 UNDER_DIAS:
     MOVF MAX_DIAS, W ; Movemos máx de días a W
     MOVWF DIAS ; Seteamos días en el máximo (underflow)
-    DECF DIAS
+    DECF DIAS ; Se decrementa en uno pues max_dias es una unidad mayor
 
     RETURN
 
@@ -3453,9 +3521,212 @@ TIMER:
     BSF PORTA, LED_TEMP
     BCF PORTA, LED_ALARM
     BCF PORTA, LED_DISP1
-    BCF PORTA, LED_DISP1
+    BCF PORTA, LED_DISP2
+
+    CLRF DISPLAY
+    SEL_DISPLAY UNIDADES_TEMP, DECENAS_TEMP, CENTENAS_TEMP, MILES_TEMP ; Macro para configuración de displays (MINUTOS:SEGUNDOS)
+
+    MOVF ST_SET, W ; Se revisa el estado de set
+    BCF ((STATUS) and 07Fh), 2
+    XORLW 1
+    BTFSC ((STATUS) and 07Fh), 2
+    GOTO EDIT_SEG_T ; Se pasa a modo edición de segundos del timer
+
+    MOVF ST_SET, W ; Se revisa el estado de set
+    BCF ((STATUS) and 07Fh), 2
+    XORLW 2
+    BTFSC ((STATUS) and 07Fh), 2
+    GOTO EDIT_MIN_T ; Se pasa a modo edición de minutos del timer
+
 
     GOTO LOOP_FSM
+
+EDIT_SEG_T:
+    BANKSEL IOCB
+    BCF IOCB, BT_MODO ; Se deshabilita cambio de modo
+
+    BANKSEL T2CON
+    BCF ((T2CON) and 07Fh), 2 ; Se pausa TMR2
+    CLRF TMR2 ; Se limpia cuenta de TMR2
+
+    BSF PORTA, LED_DISP1 ; Se enciende led de edición para primer display
+    BCF PORTA, LED_DISP2
+
+    BTFSS PORTB, BT_UP ; Se verifica si se encuentra presionado botón de display up
+    GOTO ANTIREB_SEG ; Se pasa a anti-rebote de incremento de segundos
+    BTFSS PORTB, BT_DOWN ; Se verifica si se encuentra presionado botón de display down
+    GOTO ANTIREB_SEG2 ; Se pasa a anti-rebote de decremento de segundos
+
+    CLRF DISPLAY
+    SEL_DISPLAY UNIDADES_TEMP, DECENAS_TEMP, CENTENAS_TEMP, MILES_TEMP ; Macro para configuración de displays (MINUTOS:SEGUNDOS)
+
+    MOVF ST_SET, W ; Se revisa el estado de set
+    BCF ((STATUS) and 07Fh), 2
+    XORLW 2
+    BTFSC ((STATUS) and 07Fh), 2
+    GOTO EDIT_MIN_T ; Se pasa a modo edición de minutos timer
+
+    GOTO EDIT_SEG_T
+
+ANTIREB_SEG:
+    BTFSS PORTB, BT_UP ; Se verifica si se encuentra presionado botón de display up
+    GOTO $-1
+
+    INCF SEGUNDOS_TIMER ; Se incrementa segundos del timer
+    CALL INC_SEG ; Se pasa a revisar overflow
+
+    GOTO EDIT_SEG_T
+
+ANTIREB_SEG2:
+    BTFSS PORTB, BT_DOWN ; Se verifica si se encuentra presionado botón de display down
+    GOTO $-1
+
+    DECF SEGUNDOS_TIMER ; Se decrementa segundos del timer
+    CALL DEC_SEG ; Se pasa a revisar underflow
+
+    GOTO EDIT_SEG_T
+
+INC_SEG:
+
+    MOVF SEGUNDOS_TIMER, W ; Segundos del timer a W
+    SUBLW 60 ; Se verifica si se tienen 60 segundos
+    BTFSC ((STATUS) and 07Fh), 2
+    CLRF SEGUNDOS_TIMER ; En 60 segundos se pasa a 0 segundos
+
+    CALL DISPLAY_TIMER ; Subrutina para obtención de display
+
+    RETURN
+
+DEC_SEG:
+    MOVF SEGUNDOS_TIMER, W ; Segundos del timer a W
+    SUBLW -1 ; Segundos - (-1)
+    BTFSC ((STATUS) and 07Fh), 2 ; Se verifica si se tienen -1 segundos
+    MOVLW 59
+    BTFSC ((STATUS) and 07Fh), 2
+    MOVWF SEGUNDOS_TIMER ; De -1 segundos se pasa a 59 segundos
+
+    CALL DISPLAY_TIMER ; Subrutina para obtención de display
+
+    RETURN
+
+DISPLAY_TIMER:
+
+    CLRF UNIDADES_TEMP ; Se limpian variables de display de segundos
+    CLRF DECENAS_TEMP
+
+    MOVF SEGUNDOS_TIMER, W
+    MOVWF DIV
+
+    MOVLW 10 ; Restamos 10 para obtener cantidad de decenas
+    SUBWF DIV, F
+    INCF DECENAS_TEMP ; +1 decena de segundo
+    BTFSC STATUS, 0 ; Se verifica si ocurrió BORROW (resultado aún mayor que 10)
+    GOTO $-4 ; De ser así se continua restando
+    DECF DECENAS_TEMP ; Se elimina la última añadición pues ya nos pasamos
+    MOVLW 10 ; Se regresa el valor a sus unidades antes de la resta
+    ADDWF DIV, F
+
+    MOVLW 1 ; Restamos 1 para obtener cantidad de unidades
+    SUBWF DIV, F
+    INCF UNIDADES_TEMP; +1 unidad de segundo
+    BTFSC STATUS, 0 ; Se verifica si ocurrió BORROW (resultado aún mayor que 1)
+    GOTO $-4 ; De ser así se continua restando
+    DECF UNIDADES_TEMP
+    MOVLW 1 ; Se elimina la última añadición pues ya nos pasamos
+    ADDWF DIV, F ; Se regresa el valor a 0 en este caso
+
+    RETURN
+
+EDIT_MIN_T:
+    BANKSEL IOCB
+    BCF IOCB, BT_MODO ; Se deshabilita cambio de modo
+
+    BANKSEL T2CON
+    BCF ((T2CON) and 07Fh), 2 ; Se pausa TMR2
+    CLRF TMR2 ; Se limpia cuenta de TMR2
+
+    BCF PORTA, LED_DISP1 ; Se enciende led de edición para primer display
+    BSF PORTA, LED_DISP2
+
+    BTFSS PORTB, BT_UP ; Se verifica si se encuentra presionado botón de display up
+    GOTO ANTIREB_MIN_T ; Se pasa a anti-rebote de incremento de minutos
+    BTFSS PORTB, BT_DOWN ; Se verifica si se encuentra presionado botón de display down
+    GOTO ANTIREB_MIN2_T ; Se pasa a anti-rebote de decremento de minutos
+
+    CLRF DISPLAY
+    SEL_DISPLAY UNIDADES_TEMP, DECENAS_TEMP, CENTENAS_TEMP, MILES_TEMP ; Macro para configuración de displays (MINUTOS:SEGUNDOS)
+
+    MOVF ST_SET, W
+    BTFSC ((STATUS) and 07Fh), 2
+    GOTO TIMER ; Se pasa a modo mostrar timer configurado
+
+    GOTO EDIT_MIN_T
+
+ANTIREB_MIN_T:
+    BTFSS PORTB, BT_UP ; Se verifica si se encuentra presionado botón de display up
+    GOTO $-1
+    INCF MINUTOS_TIMER ; Se incrementa minutos de timer
+    CALL INC_MINT ; Se pasa a verificar overflow
+
+    GOTO EDIT_MIN_T
+
+ANTIREB_MIN2_T:
+    BTFSS PORTB, BT_DOWN ; Se verifica si se encuentra presionado botón de display down
+    GOTO $-1
+    DECF MINUTOS_TIMER ; Se decrementa minutos de timer
+    CALL DEC_MINT ; Se pasa a verificar underflow
+
+    GOTO EDIT_MIN_T
+
+INC_MINT:
+    MOVF MINUTOS_TIMER, W ; Minutos del timer a W
+    SUBLW 100 ; Se verifica si se tienen 100 minutos
+    BTFSC ((STATUS) and 07Fh), 2
+    CLRF MINUTOS_TIMER ; En 100 minutos se pasa a 0 minutos
+
+    CALL DISPLAY_TIMER_M ; Subrutina para obtención de display
+
+    RETURN
+
+DEC_MINT:
+    MOVF MINUTOS_TIMER, W ; Minutos del timer a W
+    SUBLW -1 ; -1-Minutos
+    BTFSC ((STATUS) and 07Fh), 2 ; Se verifica si se tienen -1 minutos
+    MOVLW 99
+    BTFSC ((STATUS) and 07Fh), 2
+    MOVWF MINUTOS_TIMER ; De -1 minutos se pasa a 99 minutos
+
+    CALL DISPLAY_TIMER_M ; Subrutina para obtención de display
+
+    RETURN
+
+DISPLAY_TIMER_M:
+    BANKSEL PORTA
+    CLRF CENTENAS_TEMP ; Se limpian variables de display de minutos
+    CLRF MILES_TEMP
+
+    MOVF MINUTOS_TIMER, W
+    MOVWF DIV2
+
+    MOVLW 10 ; Restamos 10 para obtener cantidad de decenas
+    SUBWF DIV2, F
+    INCF MILES_TEMP ; +1 decena de minuto
+    BTFSC STATUS, 0 ; Se verifica si ocurrió BORROW (resultado aún mayor que 10)
+    GOTO $-4 ; De ser así se continua restando
+    DECF MILES_TEMP ; Se elimina la última añadición pues ya nos pasamos
+    MOVLW 10 ; Se regresa el valor a sus unidades antes de la resta
+    ADDWF DIV2, F
+
+    MOVLW 1 ; Restamos 1 para obtener cantidad de unidades
+    SUBWF DIV2, F
+    INCF CENTENAS_TEMP; +1 unidad de minuto
+    BTFSC STATUS, 0 ; Se verifica si ocurrió BORROW (resultado aún mayor que 1)
+    GOTO $-4 ; De ser así se continua restando
+    DECF CENTENAS_TEMP
+    MOVLW 1 ; Se elimina la última añadición pues ya nos pasamos
+    ADDWF DIV2, F ; Se regresa el valor a 0 en este caso
+
+    RETURN
 
 ALARMA:
     BANKSEL T1CON
@@ -3575,7 +3846,7 @@ CONFIG_TIMER2:
     BCF ((T2CON) and 07Fh), 4
     BCF ((T2CON) and 07Fh), 3
 
-    BSF ((T2CON) and 07Fh), 2 ; Encendemos TMR2
+    ;BSF ((T2CON) and 07Fh), 2 ; Encendemos TMR2
 
     RETURN
 
