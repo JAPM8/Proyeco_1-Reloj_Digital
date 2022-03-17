@@ -11,13 +11,13 @@
   0h - 5h		(dist/default/production\Reloj_Digital.X.production.hex)
   8h - 185h		(dist/default/production\Reloj_Digital.X.production.hex)
   200h - 249h		(dist/default/production\Reloj_Digital.X.production.hex)
-  400h - 84Dh		(dist/default/production\Reloj_Digital.X.production.hex)
+  400h - 89Fh		(dist/default/production\Reloj_Digital.X.production.hex)
   400Eh - 4011h		(dist/default/production\Reloj_Digital.X.production.hex)
  Unused ranges:
   6h - 7h
   186h - 1FFh
   24Ah - 3FFh
-  84Eh - 400Dh
+  8A0h - 400Dh
 
 ### Hex Memory Map ###
  Legend:
@@ -126,7 +126,12 @@
 00000810 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 00000820 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 00000830 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
-00000840 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 -- --
+00000840 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+00000850 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+00000860 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+00000870 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+00000880 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+00000890 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 ----------------------------------------------------------
 00004000 | -- -- -- -- -- -- -- -- -- -- -- -- -- -- H1 H1
 00004010 | H1 H1 -- -- -- -- -- -- -- -- -- -- -- -- -- --

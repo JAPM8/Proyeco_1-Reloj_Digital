@@ -2975,16 +2975,6 @@ main:
     MOVLW 32
     MOVWF A_DIAS
 
-    CLRF A_UNIDADES_F ; Se configura día 31 como día anterior
-    BSF A_UNIDADES_F, 0
-    CLRF A_DECENAS_F
-    BSF A_DECENAS_F, 0
-    BSF A_DECENAS_F, 1
-    CLRF A_CENTENAS_F ; Se configura mes 12 como mes anterior
-    BSF A_CENTENAS_F, 1
-    CLRF A_MILES_F
-    BSF A_MILES_F, 1
-
 LOOP_FSM:
     BANKSEL IOCB
     BTFSS IOCB, BT_MODO ; Se habilita botón de modo pues se deshabilita al editar
@@ -3262,9 +3252,6 @@ EDIT_MES:
     CLRF DISPLAY
     SEL_DISPLAY CENTENAS_F, MILES_F, UNIDADES_F, DECENAS_F ; Macro para configuración de displays (día/mes)
 
-    ;MOVF CENTENAS_F, W
-    ;MOVWF PORTC
-
     MOVF ST_SET, W ; Se verifica estado de set
     BCF ((STATUS) and 07Fh), 2
     XORLW 2
@@ -3302,14 +3289,10 @@ DEC_MESES:
 
     CALL MESES_DISPLAY ; Se pasa a dividir meses en centenas y miles
 
-    MOVF MESES, W
-    CALL TABLA_MESES ; El número de mes pasa a la tabla de máximos
-    MOVWF MAX_DIAS ; Se obtiene día máximo posible por el mes en que se está
-
     RETURN
 
 MESES_DISPLAY:
-    CLRF MILES_F ; Se limpian variables de display
+    CLRF MILES_F ; Se limpian variables de display de meses
     CLRF CENTENAS_F
 
     MOVF MESES, W
@@ -3323,11 +3306,7 @@ MESES_DISPLAY:
     DECF MILES_F ; Se elimina la última añadición pues ya nos pasamos
     MOVLW 10 ; Se regresa el valor a sus unidades antes de la resta
     ADDWF A_MESES, F
-    CALL OBTENER_UNIDADES
 
-    RETURN
-
-OBTENER_UNIDADES:
     MOVLW 1 ; Restamos 1 para obtener cantidad de unidades
     SUBWF A_MESES, F
     INCF CENTENAS_F ; +1 unidad de meses
@@ -3372,10 +3351,14 @@ EDIT_DIAS:
     BCF PORTA, LED_DISP1 ; Se enciende led de edición para primer display
     BSF PORTA, LED_DISP2
 
-    ;BTFSS PORTB, BT_UP ; Se verifica si se encuentra presionado botón de display up
-    ;GOTO ANTIREB_MES ; Se pasa a anti-rebote de incremento de mes
-    ;BTFSS PORTB, BT_DOWN ; Se verifica si se encuentra presionado botón de display down
-    ;GOTO ANTIREB_MES2 ; Se pasa a anti-rebote de decremento de minutos
+    MOVF MESES, W
+    CALL TABLA_MESES ; El número de mes pasa a la tabla de máximos
+    MOVWF MAX_DIAS ; Se obtiene día máximo posible por el mes en que se está
+
+    BTFSS PORTB, BT_UP ; Se verifica si se encuentra presionado botón de display up
+    GOTO ANTIREB_DIAS ; Se pasa a anti-rebote de incremento de días
+    BTFSS PORTB, BT_DOWN ; Se verifica si se encuentra presionado botón de display down
+    GOTO ANTIREB_DIAS2 ; Se pasa a anti-rebote de decremento de días
 
     CLRF DISPLAY
     SEL_DISPLAY CENTENAS_F, MILES_F, UNIDADES_F, DECENAS_F ; Macro para configuración de displays (día/mes)
@@ -3385,6 +3368,79 @@ EDIT_DIAS:
     GOTO FECHA ; Se pasa a modo mostrar fecha
 
     GOTO EDIT_DIAS
+
+ANTIREB_DIAS:
+    BTFSS PORTB, BT_UP ; Se verifica si se encuentra presionado botón de display up
+    GOTO $-1
+    CALL INC_DIAS ; Se incrementa días
+
+    GOTO EDIT_MES
+
+ANTIREB_DIAS2:
+    BTFSS PORTB, BT_DOWN ; Se verifica si se encuentra presionado botón de display down
+    GOTO $-1
+    CALL DEC_DIAS ; Se decrementa días
+
+    GOTO EDIT_MES
+
+INC_DIAS:
+    INCF DIAS
+
+    MOVF DIAS, W
+    SUBWF MAX_DIAS, W
+    BTFSC ((STATUS) and 07Fh), 2 ; Si días igual máx días se reinicia en 1
+    CLRF DIAS
+    BTFSC ((STATUS) and 07Fh), 2
+    INCF DIAS
+
+    CALL DIAS_DISPLAY ; Subrutina de separación de unidades, decenas, centenas, miles
+
+    RETURN
+
+DEC_DIAS:
+    DECF DIAS
+
+    MOVF DIAS, W
+    BTFSC ((STATUS) and 07Fh), 2 ; Si días igual 0
+    CALL UNDER_DIAS ; Se pasa a underflow días
+
+    CALL DIAS_DISPLAY ; Subrutina de separación de unidades, decenas, centenas, miles
+
+    RETURN
+
+UNDER_DIAS:
+    MOVF MAX_DIAS, W ; Movemos máx de días a W
+    MOVWF DIAS ; Seteamos días en el máximo (underflow)
+    DECF DIAS
+
+    RETURN
+
+DIAS_DISPLAY:
+    CLRF UNIDADES_F ; Se limpian variables de display de días
+    CLRF DECENAS_F
+
+    MOVF DIAS, W
+    MOVWF A_DIAS
+
+    MOVLW 10 ; Restamos 10 para obtener cantidad de decenas
+    SUBWF A_DIAS, F
+    INCF DECENAS_F ; +1 decena de días
+    BTFSC STATUS, 0 ; Se verifica si ocurrió BORROW (resultado aún mayor que 10)
+    GOTO $-4 ; De ser así se continua restando
+    DECF DECENAS_F ; Se elimina la última añadición pues ya nos pasamos
+    MOVLW 10 ; Se regresa el valor a sus unidades antes de la resta
+    ADDWF A_DIAS, F
+
+    MOVLW 1 ; Restamos 1 para obtener cantidad de unidades
+    SUBWF A_DIAS, F
+    INCF UNIDADES_F ; +1 unidad de días
+    BTFSC STATUS, 0 ; Se verifica si ocurrió BORROW (resultado aún mayor que 1)
+    GOTO $-4 ; De ser así se continua restando
+    DECF UNIDADES_F
+    MOVLW 1 ; Se elimina la última añadición pues ya nos pasamos
+    ADDWF A_DIAS, F ; Se regresa el valor a 0 en este caso
+
+    RETURN
 
 TIMER:
     BANKSEL T1CON
