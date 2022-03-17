@@ -234,10 +234,10 @@ CONT_TMR0:
     RETURN
     
 COLOCAR_VALORES:
-    BCF	PORTD, 0	    ; Apagamos selector de miles
-    BCF	PORTD, 1	    ; Apagamos selector de centenas
-    BCF	PORTD, 2	    ; Apagamos selector de decenas
-    BCF	PORTD, 3	    ; Apagamos selector de unidades
+    BCF	PORTD, SEL_UNIDAD   ; Apagamos selector de unidades
+    BCF	PORTD, SEL_DECENA   ; Apagamos selector de decenas
+    BCF	PORTD, SEL_CENTENA  ; Apagamos selector de centenas
+    BCF	PORTD, SEL_MILES    ; Apagamos selector de miles
 
     ; Lógica de condicionales para verificar que display encender
 
@@ -535,8 +535,6 @@ main:
    
     CLRF    A_MESES	      ; Variables de día y mes anterior 31/12
     CLRF    A_DIAS
-    MOVLW   12
-    MOVWF   A_MESES
     MOVLW   32
     MOVWF   A_DIAS
     
@@ -827,6 +825,9 @@ EDIT_MES:
     CLRF    DISPLAY
     SEL_DISPLAY CENTENAS_F, MILES_F, UNIDADES_F, DECENAS_F ; Macro para configuración de displays (día/mes)
     
+    ;MOVF    CENTENAS_F, W
+    ;MOVWF   PORTC
+    
     MOVF    ST_SET, W	      ; Se verifica estado de set
     BCF	    ZERO
     XORLW   2		
@@ -836,9 +837,9 @@ EDIT_MES:
     GOTO    EDIT_MES
 
 ANTIREB_MES2:
-    BTFSS   PORTB, BT_UP      ; Se verifica si se encuentra presionado botón de display up
+    BTFSS   PORTB, BT_DOWN    ; Se verifica si se encuentra presionado botón de display down
     GOTO    $-1
-    CALL    INC_MESES	      ; Se incrementa MESES
+    CALL    DEC_MESES	      ; Se decrementa MESES
     
     GOTO EDIT_MES
     
@@ -848,7 +849,59 @@ ANTIREB_MES:
     CALL    INC_MESES	      ; Se incrementa MESES
     
     GOTO EDIT_MES
+    
+DEC_MESES:
+    CLRF    UNIDADES_F	      ; Cada vez que se cambie de mes se reinician días
+    CLRF    DECENAS_F
+    MOVLW   1
+    MOVWF   DIAS	      ; Dias=1
+    BSF	    UNIDADES_F, 0     ; Unidad días= 1
+    
+    DECF    MESES	      ; Se decrementa valor de meses
+    BTFSS   ZERO	      ; Se verifica si se llega a mes 0
+    GOTO    $+3
+    MOVLW   12
+    MOVWF   MESES
+    
+    CALL    MESES_DISPLAY     ; Se pasa a dividir meses en centenas y miles
+    
+    MOVF    MESES, W	   
+    CALL    TABLA_MESES	      ; El número de mes pasa a la tabla de máximos 
+    MOVWF   MAX_DIAS	      ; Se obtiene día máximo posible por el mes en que se está   
+    
+    RETURN
+    
+MESES_DISPLAY:
+    CLRF    MILES_F    ; Se limpian variables de display
+    CLRF    CENTENAS_F
+    
+    MOVF    MESES, W 
+    MOVWF   A_MESES
+  
+    MOVLW   10	       ; Restamos 10 para obtener cantidad de decenas
+    SUBWF   A_MESES, F	     
+    INCF    MILES_F    ; +1 decena de meses
+    BTFSC   STATUS, 0  ; Se verifica si ocurrió BORROW (resultado aún mayor que 10)
+    GOTO    $-4	       ; De ser así se continua restando
+    DECF    MILES_F    ; Se elimina la última añadición pues ya nos pasamos
+    MOVLW   10	       ; Se regresa el valor a sus unidades antes de la resta 
+    ADDWF   A_MESES, F
+    CALL    OBTENER_UNIDADES
+    
+    RETURN
+    
+OBTENER_UNIDADES:
+    MOVLW   1	       ; Restamos 1 para obtener cantidad de unidades
+    SUBWF   A_MESES, F	            
+    INCF    CENTENAS_F ; +1 unidad de meses
+    BTFSC   STATUS, 0  ; Se verifica si ocurrió BORROW (resultado aún mayor que 1)
+    GOTO    $-4	       ; De ser así se continua restando
+    DECF    CENTENAS_F
+    MOVLW   1	       ; Se elimina la última añadición pues ya nos pasamos
+    ADDWF   A_MESES, F ; Se regresa el valor a 0 en este caso
 
+    RETURN
+    
 INC_MESES:
     INCF    CENTENAS_F	      ; Se incrementa unidades de mes
     INCF    MESES	      ; Se incrementan meses
@@ -892,7 +945,7 @@ EDIT_DIAS:
     
     MOVF    ST_SET, W         ; Se verifica estado de set	
     BTFSC   ZERO	      
-    GOTO    EDIT_DIAS	      ; Se pasa a modo edición de días    
+    GOTO    FECHA	      ; Se pasa a modo mostrar fecha    
     
     GOTO EDIT_DIAS
     
