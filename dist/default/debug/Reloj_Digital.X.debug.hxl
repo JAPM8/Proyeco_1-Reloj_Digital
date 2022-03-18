@@ -9,15 +9,15 @@
 ### Memory Usage ###
  Intel Hex-file ranges:
   0h - 5h		(dist/default/debug\Reloj_Digital.X.debug.hex)
-  8h - 1CDh		(dist/default/debug\Reloj_Digital.X.debug.hex)
+  8h - 1C3h		(dist/default/debug\Reloj_Digital.X.debug.hex)
   200h - 249h		(dist/default/debug\Reloj_Digital.X.debug.hex)
-  400h - A1Fh		(dist/default/debug\Reloj_Digital.X.debug.hex)
+  400h - A45h		(dist/default/debug\Reloj_Digital.X.debug.hex)
   400Eh - 4011h		(dist/default/debug\Reloj_Digital.X.debug.hex)
  Unused ranges:
   6h - 7h
-  1CEh - 1FFh
+  1C4h - 1FFh
   24Ah - 3FFh
-  A20h - 400Dh
+  A46h - 400Dh
 
 ### Hex Memory Map ###
  Legend:
@@ -54,7 +54,7 @@
 00000190 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 000001A0 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 000001B0 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
-000001C0 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 -- --
+000001C0 | H1 H1 H1 H1 -- -- -- -- -- -- -- -- -- -- -- --
 ----------------------------------------------------------
 00000200 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 00000210 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
@@ -160,6 +160,9 @@
 000009F0 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 00000A00 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
 00000A10 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+00000A20 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+00000A30 | H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1 H1
+00000A40 | H1 H1 H1 H1 H1 H1 -- -- -- -- -- -- -- -- -- --
 ----------------------------------------------------------
 00004000 | -- -- -- -- -- -- -- -- -- -- -- -- -- -- H1 H1
 00004010 | H1 H1 -- -- -- -- -- -- -- -- -- -- -- -- -- --

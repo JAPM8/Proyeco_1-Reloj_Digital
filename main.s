@@ -38,9 +38,8 @@ CONFIG  WRT = OFF             ; Flash Program Memory Self Write Enable bits (Wri
 LED_HORA    EQU 0	      ; Utilizado para encender RA0
 LED_FECHA   EQU 1	      ; Utilizado para encender RA1
 LED_TEMP    EQU 2	      ; Utilizado para encender RA2
-LED_ALARM   EQU 3	      ; Utilizado para encender RA3
-LED_PUNTO1  EQU 4	      ; Utilizado para encender RA4
-LED_PUNTO2  EQU 5	      ; Utilizado para encender RA5
+LED_ACTIVE  EQU 3	      ; Utilizado para encender RA3
+LED_PUNTOS  EQU 4	      ; Utilizado para encender RA4
 LED_DISP1   EQU 6	      ; Utilizado para encender RA6
 LED_DISP2   EQU 7	      ; Utilizado para encender RA7
 
@@ -118,7 +117,7 @@ PSECT udata_bank0
     CONT_TIMER:		DS 1	      ; 1 Byte
     CONT_FIN_ALARMA:	DS 1	      ; 1 Byte
     BANDERA_TIMER:	DS 1	      ; 1 Byte
-    SEGUNDOS_TIMER:	DS 1	      ; 1 Byte
+    SEGUNDOS_TIMER:	DS 1	      ; 1 Byte (31)
     MINUTOS_TIMER:	DS 1	      ; 1 Byte
     UNIDADES_TEMP:	DS 1	      ; 1 Byte
     DECENAS_TEMP:	DS 1	      ; 1 Byte
@@ -189,23 +188,32 @@ POP:			      ; Se regresan los registros w y STATUS
 ;*******************************************************************************
 ;                          Sub-rutinas de interrupción
 ;******************************************************************************* 
-INT_IOCB:    
-    BTFSS   PORTB, BT_INICIAR ; Anti-rebote botón BT_INICIAR
-    CALL    INC_INICIAR	      ; De estar presionado se pasa a incrementar estado de iniciar
-    
+INT_IOCB:       
     BTFSS   PORTB, BT_EDITAR  ; Anti-rebote botón BT_EDITAR
     CALL    INC_SET	      ; De estar presionado se pasa a incrementar estado de set
     
     BTFSS   PORTB, BT_MODO    ; Anti-rebote botón BT_MODO
     CALL    INC_MODO	      ; De estar presionado se pasa a incrementar estado de modo
+    
+    MOVF    MODO, W
+    BCF	    ZERO
+    XORLW   2
+    BTFSC   ZERO
+    CALL    MODO_INICIAR      ; Solo en modo timer interesa modificar estado iniciar
         
     BCF	    RBIF	      ; Limpieza bandera de interrupción
+    
+    RETURN
+
+MODO_INICIAR:
+    BTFSS   PORTB, BT_INICIAR ; Anti-rebote botón BT_INICIAR
+    CALL    INC_INICIAR	      ; De estar presionado se pasa a incrementar estado de iniciar
     
     RETURN
     
 INC_INICIAR:
     INCF    ST_INICIAR 	      ; Se cambia de estado de iniciar ACTIVAR->DESACTIVAR
-    MOVF    ST_SET, W
+    MOVF    ST_INICIAR, W
     SUBLW   5		      ; Se limita a máximo estado 101b
     BTFSC   ZERO
     CLRF    ST_INICIAR
@@ -224,7 +232,7 @@ INC_SET:
 INC_MODO:
     INCF    MODO	       ; Se cambia de estado de modo HORA->FECHA->TEMPORIZADOR->ALARMA
     MOVF    MODO, W
-    SUBLW   4		       ; Se limita a máximo estado 11b
+    SUBLW   3		       ; Se limita a máximo estado 10b
     BTFSC   ZERO
     CLRF    MODO
     
@@ -316,8 +324,7 @@ CONT_TMR1:
     
 LED_INTERMITENCIA:
     INCF    MEDIO_SEC	      ; Contador de medios segundos
-    BSF	    PORTA, LED_PUNTO1 ; Se encienden 2 puntos del reloj
-    BSF	    PORTA, LED_PUNTO2
+    BSF	    PORTA, LED_PUNTOS ; Se encienden 2 puntos del reloj
     MOVF    MEDIO_SEC, W
     SUBLW   2		      
     BTFSC   ZERO
@@ -327,8 +334,7 @@ LED_INTERMITENCIA:
  
 NEG_INTERMITENCIA:
     CLRF    MEDIO_SEC
-    BCF	    PORTA, LED_PUNTO1 ; Se apagan 2 puntos del reloj
-    BCF	    PORTA, LED_PUNTO2
+    BCF	    PORTA, LED_PUNTOS ; Se apagan 2 puntos del reloj
     
     RETURN 
     
@@ -439,61 +445,134 @@ CONT_TMR2:
     
     MOVF    CONT_TIMER, W      ; Contador a W
     SUBLW   20		       ; 20 repeticiones equivalen a 1 segundo
-    BTFSC   ZERO
-    CLRF    CONT_TIMER	       ; Reinicio de conteo de int TMR2
-    
     BTFSS   ZERO	       ; Si existe Zero pasamos a decrementar segundos
     RETURN
+    BTFSC   BANDERA_TIMER, 0   ; Bandera que indica tiempo finalizado y pasa a min de espera alarma
+    GOTO    MINUTO_ALARMA
     
-    BTFSS   BANDERA_TIMER, 1   ; Bandera que se activa cuando se cumpli
-    DECF    SEGUNDOS_TIMER     ; Se incrementa contador de segundos
+    CLRF    CONT_TIMER
+    
+    DECF    SEGUNDOS_TIMER     ; Se decrementa segundos configurados
     MOVF    SEGUNDOS_TIMER, W
-    
+    SUBLW   -1		       ; Se verifica si ya pasamos de 0 seg
     BTFSC   ZERO
-    CALL    DEC_MIN_TIMER      ; Se pasa a decrementar segundos
+    MOVLW   59		       ; Underflow
+    BTFSC   ZERO
+    MOVWF   SEGUNDOS_TIMER     ; Underflow segundos (0 a 59)
+    BTFSC   ZERO
+    CALL    DEC_MIN_TIMER      ; Se pasa a undeflow segundos y resta min
+    CALL    DISPLAY_INT_T      ; Se pasa a seteo de variables display
     
+    SALTO_ALARMA:
     RETURN
 
-DEC_MIN_TIMER:
-    BTFSC   BANDERA_TIMER, 0
-    CALL    FIN_T	       ; Si minutos igual 0 se pasa a esperar 0 seg
-    BTFSC   BANDERA_TIMER, 0
-    RETURN
+DISPLAY_INT_T:
+    BANKSEL PORTA
+    CLRF    DIV
+    CLRF    UNIDADES_TEMP      ; Se limpian variables de display de segundos
+    CLRF    DECENAS_TEMP
     
-    MOVLW   59
-    MOVWF   SEGUNDOS_TIMER	; Underflow segundos (0 a 59)
+    MOVF    SEGUNDOS_TIMER, W 
+    MOVWF   DIV
+  
+    MOVLW   10	               ; Restamos 10 para obtener cantidad de decenas
+    SUBWF   DIV, F	     
+    INCF    DECENAS_TEMP       ; +1 decena de segundo
+    BTFSC   STATUS, 0          ; Se verifica si ocurrió BORROW (resultado aún mayor que 10)
+    GOTO    $-4	               ; De ser así se continua restando
+    DECF    DECENAS_TEMP       ; Se elimina la última añadición pues ya nos pasamos
+    MOVLW   10	               ; Se regresa el valor a sus unidades antes de la resta 
+    ADDWF   DIV, F
     
-    DECF    MINUTOS_TIMER	; Minutos - 1
+    MOVLW   1	               ; Restamos 1 para obtener cantidad de unidades
+    SUBWF   DIV, F	            
+    INCF    UNIDADES_TEMP      ; +1 unidad de segundo
+    BTFSC   STATUS, 0          ; Se verifica si ocurrió BORROW (resultado aún mayor que 1)
+    GOTO    $-4	               ; De ser así se continua restando
+    DECF    UNIDADES_TEMP
+    MOVLW   1	               ; Se elimina la última añadición pues ya nos pasamos
+    ADDWF   DIV, F             ; Se regresa el valor a 0 en este caso
     
-    MOVF    MINUTOS_TIMER, W	; Minutos a W
+    MOVF    UNIDADES_TEMP, W   ; Se suma en w variables de display para verificar si ya minutos=segundos=0
+    ADDWF   DECENAS_TEMP, W
+    ADDWF   CENTENAS_TEMP, W
+    ADDWF   MILES_TEMP, W
     BTFSC   ZERO
-    BSF	    BANDERA_TIMER, 0	; Bandera que indica que restan solo 59 sg
+    CALL    FIN_T	       ; Se pasa a subrutina de alarma del timer
+    
+    RETURN    
+    
+DEC_MIN_TIMER:
+    BANKSEL PORTA
+            
+    DECF    MINUTOS_TIMER	; Minutos - 1
+    CALL    DISPLAY_INT_M	; Se pasa a obtener variables de display
         
     RETURN
+
+DISPLAY_INT_M:
+    CLRF    DIV2
+    CLRF    CENTENAS_TEMP    ; Se limpian variables de display de minutos
+    CLRF    MILES_TEMP
+    
+    MOVF    MINUTOS_TIMER, W 
+    MOVWF   DIV2
+  
+    MOVLW   10	       ; Restamos 10 para obtener cantidad de decenas
+    SUBWF   DIV2, F	     
+    INCF    MILES_TEMP ; +1 decena de minuto
+    BTFSC   STATUS, 0  ; Se verifica si ocurrió BORROW (resultado aún mayor que 10)
+    GOTO    $-4	       ; De ser así se continua restando
+    DECF    MILES_TEMP ; Se elimina la última añadición pues ya nos pasamos
+    MOVLW   10	       ; Se regresa el valor a sus unidades antes de la resta 
+    ADDWF   DIV2, F
+    
+    MOVLW   1	       ; Restamos 1 para obtener cantidad de unidades
+    SUBWF   DIV2, F	            
+    INCF    CENTENAS_TEMP; +1 unidad de minuto
+    BTFSC   STATUS, 0  ; Se verifica si ocurrió BORROW (resultado aún mayor que 1)
+    GOTO    $-4	       ; De ser así se continua restando
+    DECF    CENTENAS_TEMP
+    MOVLW   1	       ; Se elimina la última añadición pues ya nos pasamos
+    ADDWF   DIV2, F  ; Se regresa el valor a 0 en este caso
+    
+    RETURN    
     
 FIN_T:  
-    MOVF    SEGUNDOS_TIMER, W	; Se verifica que segundos sea 0
-    BTFSC   ZERO	    
-    BSF	    BANDERA_TIMER, 1	; Bandera indica 00:00
-    BTFSC   BANDERA_TIMER, 1	
-    CALL    ALARMA_TIMER        ; Se pasa a activar alarma
+    BANKSEL PORTA
+    CLRF    UNIDADES_TEMP   ;Limpieza display
+    CLRF    DECENAS_TEMP
+    CLRF    CENTENAS_TEMP
+    CLRF    MILES_TEMP
+    
+    BSF	    BANDERA_TIMER, 0	; Bandera indica 00:00
+    BSF	    PORTE, LED_FIN_T	; Se enciende alarma
+    BCF	    PORTA, LED_ACTIVE	; Se apaga led de timer activo
+    MOVLW   3
+    MOVWF   ST_INICIAR	        ; Se pasa a estado 3 de iniciar
     
     RETURN
-
-ALARMA_TIMER:
-    BSF	    PORTE, LED_FIN_T	; Se enciende alarma
     
+MINUTO_ALARMA:
+    CLRF    CONT_TIMER		; Limpieza contador de segundos
     INCF    CONT_FIN_ALARMA	; Contador de minuto para desactivación de alarma
     MOVF    CONT_FIN_ALARMA, W
-    SUBLW   1200		; Luego de 1 minuto
+    SUBLW   60    		; Luego de 1 minuto
     BTFSC   ZERO
-    BCF	    PORTE, LED_FIN_T	; Se apaga alarma
+    GOTO    APAGAR_TIMER	; Se pasa a apagar timer
+    SALTO_ALARMA2:
     
-    RETURN
+    GOTO    SALTO_ALARMA
+    
+APAGAR_TIMER:
+   MOVLW    4
+   MOVWF    ST_INICIAR		; Se pasa a estado 4 timer (reinicio)
+   
+    GOTO    SALTO_ALARMA2
     
 ; CONFIG uCS
 PSECT code, delta=2, abs
-ORG 100h                      ; posición para tablas
+ORG 200h                      ; posición para tablas
 
  ;------------------------------------------------------------------------------
  ;				  TABLAS
@@ -501,7 +580,7 @@ ORG 100h                      ; posición para tablas
  
  TABLA:
     CLRF    PCLATH	     ; Limpiamos registro PCLATH
-    BSF	    PCLATH, 0	     ; Posicionamos el PC en dirección 01xxh
+    BSF	    PCLATH, 1	     ; Posicionamos el PC en dirección 02xxh
     ANDLW   0x0F	     ; No saltar más del tamaño de la tabla
     ADDWF   PCL		     ; Apuntamos el PC a PCLATH + PCL + W
     retlw 00111111B ;0
@@ -523,7 +602,7 @@ ORG 100h                      ; posición para tablas
 
 TABLA_MESES:
     CLRF    PCLATH	     ; Limpiamos registro PCLATH
-    BSF	    PCLATH, 0	     ; Posicionamos el PC en dirección 01xxh
+    BSF	    PCLATH, 1	     ; Posicionamos el PC en dirección 02xxh
     ANDLW   0x0F	     ; No saltar más del tamaño de la tabla
     ADDWF   PCL		     ; Apuntamos el PC a PCLATH + PCL + W
     
@@ -541,9 +620,7 @@ TABLA_MESES:
     RETLW	32 ;OCTUBRE (10)
     RETLW	31 ;NOVIEMBRE (11)
     RETLW	32 ;DICIEMBRE (12)
-
-ORG 200h		      ; Posición para código
-    
+   
 main:
 ; Configuración Inputs y Outputs
     CALL    CONFIG_PINES
@@ -608,8 +685,12 @@ main:
        
 LOOP_FSM:
     BANKSEL IOCB
-    BTFSS   IOCB, BT_MODO     ; Se habilita botón de modo pues se deshabilita al editar
+    BTFSS   IOCB, BT_MODO     ; Se habilitan botones pues se deshabilitan como progra defensiva
     BSF	    IOCB, BT_MODO
+    BTFSS   IOCB, BT_EDITAR
+    BSF	    IOCB, BT_EDITAR   ; Se habilita edición
+    BTFSS   IOCB, BT_INICIAR
+    BSF	    IOCB, BT_INICIAR  ; Se habilita activación timer
     
     BANKSEL PORTA
     MOVF    MODO, W	      ; Movemos el valor de estado en el que se encuentra
@@ -629,13 +710,7 @@ LOOP_FSM:
     XORLW   2		
     BTFSC   ZERO	      
     GOTO    TIMER	      ; Se pasa a modo timer donde se mostrará, configurará y activará
-    
-    MOVF    MODO, W           ; Movemos el valor de estado en el que se encuentra
-    BCF	    ZERO
-    XORLW   3		
-    BTFSC   ZERO
-    GOTO    ALARMA	      ; Se pasa a modo alarma donde se mostrará, configurará y activará
-    
+        
     GOTO LOOP_FSM
 
 ;-------------------------------------------------------------------------------
@@ -651,7 +726,6 @@ HORA:
     BSF	    PORTA, LED_HORA   ; Se enciende Led indicador de modo
     BCF	    PORTA, LED_FECHA
     BCF	    PORTA, LED_TEMP
-    BCF	    PORTA, LED_ALARM
     BCF	    PORTA, LED_DISP1
     BCF	    PORTA, LED_DISP2
     
@@ -669,6 +743,12 @@ HORA:
     XORLW   2		
     BTFSC   ZERO	      
     GOTO    EDIT_HRS	      ; Se pasa a modo edición de horas
+    
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar
+    BCF	    ZERO
+    XORLW   4		
+    BTFSC   ZERO	      
+    GOTO    CLEAR_TIMER      ; Se pasa a detener del timer
     
     GOTO LOOP_FSM
     
@@ -844,7 +924,6 @@ FECHA:
     BCF	    PORTA, LED_HORA   ; Se enciende Led indicador de modo
     BSF	    PORTA, LED_FECHA
     BCF	    PORTA, LED_TEMP
-    BCF	    PORTA, LED_ALARM
     BCF	    PORTA, LED_DISP1
     BCF	    PORTA, LED_DISP2
     
@@ -862,6 +941,12 @@ FECHA:
     XORLW   2		
     BTFSC   ZERO	      
     GOTO    EDIT_DIAS	      ; Se pasa a modo edición de horas
+    
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar
+    BCF	    ZERO
+    XORLW   4		
+    BTFSC   ZERO	      
+    GOTO    CLEAR_TIMER      ; Se pasa a detener del timer
     
     GOTO LOOP_FSM
 
@@ -1078,13 +1163,14 @@ TIMER:
     BTFSS   TMR1ON	      ; Se verifica que se encuentre encendido el TMR1
     BSF	    TMR1ON
     
-    BANKSEL PORTA
     BCF	    PORTA, LED_HORA   ; Se enciende Led indicador de modo
     BCF	    PORTA, LED_FECHA
     BSF	    PORTA, LED_TEMP
-    BCF	    PORTA, LED_ALARM
     BCF	    PORTA, LED_DISP1
     BCF	    PORTA, LED_DISP2
+    
+    CALL    DISPLAY_TIMER     ; Se obtienen valores de display
+    CALL    DISPLAY_TIMER_M  
     
     CLRF    DISPLAY
     SEL_DISPLAY UNIDADES_TEMP, DECENAS_TEMP, CENTENAS_TEMP, MILES_TEMP	; Macro para configuración de displays (MINUTOS:SEGUNDOS)
@@ -1101,12 +1187,149 @@ TIMER:
     BTFSC   ZERO	      
     GOTO    EDIT_MIN_T	      ; Se pasa a modo edición de minutos del timer
     
+    BANKSEL IOCB
+    BSF	    IOCB, BT_MODO     ; Se habilita cambio de modo
+    
+    BANKSEL PORTA
+    MOVF    ST_INICIAR, W      ; Se revisa el estado de iniciar
+    BCF	    ZERO
+    XORLW   1		
+    BTFSC   ZERO
+    GOTO    INIT_TIMER	      ; Se pasa a iniciar timer
+    
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar
+    BCF	    ZERO
+    XORLW   2		
+    BTFSC   ZERO	      
+    GOTO    STOP_TIMER	      ; Se pasa a detener del timer
+    
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar
+    BCF	    ZERO
+    XORLW   3		
+    BTFSC   ZERO	      
+    GOTO    ALARMA_TIMER      ; Se pasa a detener del timer
+    
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar
+    BCF	    ZERO
+    XORLW   4		
+    BTFSC   ZERO	      
+    GOTO    CLEAR_TIMER       ; Se pasa a limpiar timer
+    
     
     GOTO LOOP_FSM
+
+INIT_TIMER:
+        
+    MOVF    UNIDADES_TEMP, W  ; Se verifica que se tenga como mínimo un segundo
+    ADDWF   DECENAS_TEMP, W
+    ADDWF   CENTENAS_TEMP, W
+    ADDWF   MILES_TEMP, W
+    BTFSC   ZERO
+    CLRF    ST_INICIAR	       ; No se activa timer
+    BTFSC   ZERO
+    GOTO    TIMER	       ; Se regresa a modo mostrar
+    
+    BANKSEL IOCB
+    BCF	    IOCB, BT_EDITAR   ; Se deshabilita edición
+    
+    BANKSEL PORTA
+    BTFSS   TMR2ON
+    BSF	    TMR2ON
+    
+    BSF	    PORTA, LED_ACTIVE ; Se enciende led indicativo que está activo temp
+    
+    CLRF    BANDERA_TIMER     ; Limpieza de bandera de interrupción tmr2
+    
+    CLRF    DISPLAY
+    SEL_DISPLAY UNIDADES_TEMP, DECENAS_TEMP, CENTENAS_TEMP, MILES_TEMP	; Macro para configuración de displays (MINUTOS:SEGUNDOS)
+    
+    MOVF    MODO, W	      ; Movemos el valor de estado en el que se encuentra
+    BCF	    ZERO
+    XORLW   0	              ; Lógica de XOR: val iguales activa ZERO flag
+    BTFSC   ZERO
+    GOTO    HORA	      ; Se pasa a modo hora donde se mostrará o editará
+    
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar
+    BCF	    ZERO
+    XORLW   2		
+    BTFSC   ZERO	      
+    GOTO    STOP_TIMER	      ; Se pasa a detener del timer
+    
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar
+    BCF	    ZERO
+    XORLW   3		
+    BTFSC   ZERO	      
+    GOTO    ALARMA_TIMER      ; Se pasa a detener del timer*/
+    
+    GOTO INIT_TIMER
+ 
+STOP_TIMER: 
+    BANKSEL PORTA
+    BCF	    TMR2ON
+    
+    CLRF    ST_INICIAR	      ; Se pasa a estado 0 de iniciar (mostrar)
+    
+    BCF	    PORTA, LED_ACTIVE ; Se apaga led indicativo que está activo temp
+    
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar		
+    BTFSC   ZERO
+    GOTO    TIMER	      ; Se pasa a mostrar valor detenido TIMER
+    
+    GOTO STOP_TIMER
+    
+ALARMA_TIMER:
+    BANKSEL PORTA
+    
+    CLRF    UNIDADES_TEMP
+    CLRF    DECENAS_TEMP
+    CLRF    CENTENAS_TEMP
+    CLRF    MILES_TEMP
+    
+    BCF	    PORTA, LED_ACTIVE
+    
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar
+    BCF	    ZERO
+    XORLW   4		
+    BTFSC   ZERO	      
+    GOTO    CLEAR_TIMER      ; Se pasa a detener del timer
+        
+    MOVF    MODO, W	      ; Movemos el valor de estado en el que se encuentra
+    BCF	    ZERO
+    XORLW   0	              ; Lógica de XOR: val iguales activa ZERO flag
+    BTFSC   ZERO
+    GOTO    HORA	      ; Se pasa a modo hora donde se mostrará o editará
+    
+    GOTO ALARMA_TIMER
+    
+CLEAR_TIMER:
+    BANKSEL PORTA
+    BCF	    TMR2ON	      ; Se apaga TMR2
+    
+    BCF	    PORTE, LED_FIN_T  ; Se apaga alarma
+    
+    CLRF    BANDERA_TIMER     ; Limpieza bandera
+    CLRF    CONT_TIMER	      ; Limpieza contadores
+    CLRF    SEGUNDOS_TIMER
+    CLRF    MINUTOS_TIMER
+    CLRF    CONT_FIN_ALARMA
+    
+    CLRF    UNIDADES_TEMP
+    CLRF    DECENAS_TEMP
+    CLRF    CENTENAS_TEMP
+    CLRF    MILES_TEMP
+    
+    CLRF    ST_INICIAR	      ; Se regresa a estado 0 de mostrar
+        
+    MOVF    ST_INICIAR, W     ; Se revisa el estado de iniciar		
+    BTFSC   ZERO
+    GOTO    TIMER	      ; Se pasa a mostrar valor detenido TIMER
+    
+    GOTO CLEAR_TIMER
     
 EDIT_SEG_T:
     BANKSEL IOCB
     BCF	    IOCB, BT_MODO     ; Se deshabilita cambio de modo
+    BCF	    IOCB, BT_INICIAR  ; Se deshabilita activación timer
     
     BANKSEL T2CON
     BCF	    TMR2ON	      ; Se pausa TMR2
@@ -1162,7 +1385,7 @@ INC_SEG:
     
 DEC_SEG:
     MOVF    SEGUNDOS_TIMER, W ; Segundos del timer a W
-    SUBLW   -1		      ; Segundos - (-1)
+    SUBLW   -1		      ; -1- SEGUNDOS
     BTFSC   ZERO	      ; Se verifica si se tienen -1 segundos    
     MOVLW   59
     BTFSC   ZERO
@@ -1203,6 +1426,7 @@ DISPLAY_TIMER:
 EDIT_MIN_T:
     BANKSEL IOCB
     BCF	    IOCB, BT_MODO     ; Se deshabilita cambio de modo
+    BCF	    IOCB, BT_INICIAR  ; Se deshabilita activación timer
     
     BANKSEL T2CON
     BCF	    TMR2ON	      ; Se pausa TMR2
@@ -1264,7 +1488,7 @@ DEC_MINT:
     RETURN
     
 DISPLAY_TIMER_M:
-    BANKSEL PORTA
+    
     CLRF    CENTENAS_TEMP    ; Se limpian variables de display de minutos
     CLRF    MILES_TEMP
     
@@ -1291,21 +1515,6 @@ DISPLAY_TIMER_M:
     
     RETURN
     
-ALARMA:
-    BANKSEL T1CON
-    BTFSS   TMR1ON	      ; Se verifica que se encuentre encendido el TMR1
-    BSF	    TMR1ON
-    
-    BANKSEL PORTA
-    BCF	    PORTA, LED_HORA   ; Se enciende Led indicador de modo
-    BCF	    PORTA, LED_FECHA
-    BCF	    PORTA, LED_TEMP
-    BSF	    PORTA, LED_ALARM
-    BCF	    PORTA, LED_DISP1
-    BCF	    PORTA, LED_DISP1
-    
-    GOTO LOOP_FSM
-  
 ;-------------------------------------------------------------------------------
 ;                      Subrutinas de configuración del PIC
 ;-------------------------------------------------------------------------------
@@ -1317,6 +1526,7 @@ CONFIG_PINES:
     
     BANKSEL TRISA
     CLRF    TRISA	      ; PORTA -> Output
+    CLRF    TRISE
     
     BANKSEL TRISB	      ; Cambiamos de banco
     BSF	    TRISB, BT_UP      ; RB0-RB4 como inputs
@@ -1350,6 +1560,7 @@ CONFIG_PINES:
     CLRF    PORTB
     CLRF    PORTC
     CLRF    PORTD
+    CLRF    PORTE
     
     RETURN
 
@@ -1409,7 +1620,7 @@ CONFIG_TIMER2:
     BCF	    TOUTPS1
     BCF	    TOUTPS0
     
-    ;BSF	    TMR2ON	      ; Encendemos TMR2
+    BCF	    TMR2ON	      ; TMR2 OFF
     
     RETURN
 
@@ -1444,4 +1655,10 @@ CONFIG_IOCRB:
     
     RETURN
 
+/*
+		        (????)?*:??? ???: *?(????)
+			     FIN, MUCHAS GRACIAS
+                        ??(°.°)??(°.°)??(°.°)??(°.°)? ?
+*/
+    
 END
