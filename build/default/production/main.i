@@ -2481,6 +2481,7 @@ LED_DISP1 EQU 6 ; Utilizado para encender ((PORTA) and 07Fh), 6
 LED_DISP2 EQU 7 ; Utilizado para encender ((PORTA) and 07Fh), 7
 
 LED_FIN_T EQU 0 ; Utilizado para encender ((PORTE) and 07Fh), 0
+BUZZER EQU 1 ; Utilizado para encender ((PORTE) and 07Fh), 1
 
 BT_UP EQU 0 ; Utilizado para leer ((PORTB) and 07Fh), 0
 BT_DOWN EQU 1 ; Utilizado para leer ((PORTB) and 07Fh), 1
@@ -2632,11 +2633,17 @@ INT_IOCB:
     BTFSS PORTB, BT_MODO ; Anti-rebote botón BT_MODO
     CALL INC_MODO ; De estar presionado se pasa a incrementar estado de modo
 
-    MOVF MODO, W
+    MOVF MODO, W ; Modo a W
     BCF ((STATUS) and 07Fh), 2
-    XORLW 2
+    XORLW 2 ; Se verifica si se está en modo timer
     BTFSC ((STATUS) and 07Fh), 2
     CALL MODO_INICIAR ; Solo en modo timer interesa modificar estado iniciar
+
+    MOVF ST_INICIAR, W ; Cuando está activa la alarma, en cualquier instante se puede desactivar
+    BCF ((STATUS) and 07Fh), 2
+    XORLW 3 ; Se garantiza que ya está funcionando la alarma
+    BTFSC ((STATUS) and 07Fh), 2
+    CALL MODO_INICIAR ; Solo en modo alarma timer interesa modificar estado en cualquier otro modo
 
     BCF ((INTCON) and 07Fh), 0 ; Limpieza bandera de interrupción
 
@@ -2653,7 +2660,7 @@ INC_INICIAR:
     MOVF ST_INICIAR, W
     SUBLW 5 ; Se limita a máximo estado 101b
     BTFSC ((STATUS) and 07Fh), 2
-    CLRF ST_INICIAR
+    CLRF ST_INICIAR ; Reinicio de estado
 
     RETURN
 
@@ -2662,7 +2669,7 @@ INC_SET:
     MOVF ST_SET, W
     SUBLW 3 ; Se limita a máximo estado 11b
     BTFSC ((STATUS) and 07Fh), 2
-    CLRF ST_SET
+    CLRF ST_SET ; Reinicio de estado
 
     RETURN
 
@@ -2674,11 +2681,11 @@ INC_MODO:
     CLRF MODO
 
     RETURN
-
+;*******************************************************************************
 CONT_TMR0:
     RESET_TMR0 ; Reinicio de timer
 
-    CALL COLOCAR_VALORES
+    CALL COLOCAR_VALORES ; Subrutina para colocación de selectores
 
     RETURN
 
@@ -2745,7 +2752,7 @@ DISPLAY_3:
     BSF BANDERA, 0
 
 RETURN
-
+;*******************************************************************************
 CONT_TMR1:
     RESET_TMR1 0x0B, 0xDC ; TMR1 a 500 ms
 
@@ -2753,7 +2760,7 @@ CONT_TMR1:
 
     INCF CONT_TMR_1 ; Contador de interrupciones de TMR1
     MOVF CONT_TMR_1, W
-    SUBLW 2 ; 120 interrupciones de 500 ms equivalen a 1 min ***CAMBIAR***
+    SUBLW 120 ; 120 interrupciones de 500 ms equivalen a 1 min ***CAMBIAR***
     BTFSC ((STATUS) and 07Fh), 2 ; Revisión de bandera
     CALL INC_MINUTOS ; De resultar 0 la resta pasamos a la subrutina de incremento de minutos
 
@@ -2875,7 +2882,7 @@ INC_MES:
     CLRF DECENAS_F
 
     RETURN
-
+;*******************************************************************************
 CONT_TMR2:
     BCF ((PIR1) and 07Fh), 1
     INCF CONT_TIMER ; Contador de repeticiones del TMR2
@@ -2984,7 +2991,9 @@ FIN_T:
 
     BSF BANDERA_TIMER, 0 ; Bandera indica 00:00
     BSF PORTE, LED_FIN_T ; Se enciende alarma
+    BSF PORTE, BUZZER ; Se enciende buzzer
     BCF PORTA, LED_ACTIVE ; Se apaga led de timer activo
+
     MOVLW 3
     MOVWF ST_INICIAR ; Se pasa a estado 3 de iniciar
 
@@ -3006,10 +3015,11 @@ APAGAR_TIMER:
    MOVWF ST_INICIAR ; Se pasa a estado 4 timer (reinicio)
 
     GOTO SALTO_ALARMA2
+;*******************************************************************************
 
 ; CONFIG uCS
 PSECT code, delta=2, abs
-ORG 200h ; posición para tablas
+ORG 200h ; Posición para tablas Y código
 
  ;------------------------------------------------------------------------------
  ; TABLAS
@@ -3057,6 +3067,10 @@ TABLA_MESES:
     RETLW 32 ;OCTUBRE (10)
     RETLW 31 ;NOVIEMBRE (11)
     RETLW 32 ;DICIEMBRE (12)
+
+;-------------------------------------------------------------------------------
+; CONFIGURACIONES, LIMPIEZA DE VARIABLES Y ASIGNACIÓN DE VALORES
+;-------------------------------------------------------------------------------
 
 main:
 ; Configuración Inputs y Outputs
@@ -3120,6 +3134,10 @@ main:
     CLRF SEGUNDOS_TIMER
     CLRF MINUTOS_TIMER
 
+;-------------------------------------------------------------------------------
+; LOOP PRINCIPAL FSM
+;-------------------------------------------------------------------------------
+
 LOOP_FSM:
     BANKSEL IOCB
     BTFSS IOCB, BT_MODO ; Se habilitan botones pues se deshabilitan como progra defensiva
@@ -3151,7 +3169,7 @@ LOOP_FSM:
     GOTO LOOP_FSM
 
 ;-------------------------------------------------------------------------------
-; Subrutinas de FSM
+; MODO HORA Y SUBRUTINAS DE ESTE
 ;-------------------------------------------------------------------------------
 
 HORA:
@@ -3319,6 +3337,7 @@ DEC_HRS:
     BCF ((STATUS) and 07Fh), 2
     MOVLW -1 ; Se mueve literal de -1 a W
     SUBWF MILES, W ; Se verifica si la operación de decremento resulto en -1 (MILES-(-1)=0)
+
     BTFSS ((STATUS) and 07Fh), 2 ; De activarse la bandera saltamos setear MILES a 2 y CENTENAS A 3
     RETURN
     MOVLW 2
@@ -3351,6 +3370,10 @@ INC_HRS:
     CLRF MILES
 
     RETURN
+
+;-------------------------------------------------------------------------------
+; MODO FECHA Y SUBRUTINAS DE ESTE
+;-------------------------------------------------------------------------------
 
 FECHA:
     BANKSEL T1CON
@@ -3472,6 +3495,12 @@ MESES_DISPLAY:
     RETURN
 
 INC_MESES:
+    CLRF UNIDADES_F ; Cada vez que se cambie de mes se reinician días
+    CLRF DECENAS_F
+    MOVLW 1
+    MOVWF DIAS ; Dias=1
+    BSF UNIDADES_F, 0 ; Unidad días= 1
+
     INCF CENTENAS_F ; Se incrementa unidades de mes
     INCF MESES ; Se incrementan meses
     MOVF CENTENAS_F, W
@@ -3595,6 +3624,10 @@ DIAS_DISPLAY:
 
     RETURN
 
+;-------------------------------------------------------------------------------
+; MODO TIMER Y SUSBRUTINAS DE ESTE
+;-------------------------------------------------------------------------------
+
 TIMER:
     BANKSEL T1CON
     BTFSS ((T1CON) and 07Fh), 0 ; Se verifica que se encuentre encendido el TMR1
@@ -3605,9 +3638,6 @@ TIMER:
     BSF PORTA, LED_TEMP
     BCF PORTA, LED_DISP1
     BCF PORTA, LED_DISP2
-
-    CALL DISPLAY_TIMER ; Se obtienen valores de display
-    CALL DISPLAY_TIMER_M
 
     CLRF DISPLAY
     SEL_DISPLAY UNIDADES_TEMP, DECENAS_TEMP, CENTENAS_TEMP, MILES_TEMP ; Macro para configuración de displays (MINUTOS:SEGUNDOS)
@@ -3717,12 +3747,8 @@ STOP_TIMER:
 ALARMA_TIMER:
     BANKSEL PORTA
 
-    CLRF UNIDADES_TEMP
-    CLRF DECENAS_TEMP
-    CLRF CENTENAS_TEMP
-    CLRF MILES_TEMP
-
-    BCF PORTA, LED_ACTIVE
+    CLRF DISPLAY
+    SEL_DISPLAY UNIDADES_TEMP, DECENAS_TEMP, CENTENAS_TEMP, MILES_TEMP ; Macro para configuración de displays (MINUTOS:SEGUNDOS)
 
     MOVF ST_INICIAR, W ; Se revisa el estado de iniciar
     BCF ((STATUS) and 07Fh), 2
@@ -3732,7 +3758,7 @@ ALARMA_TIMER:
 
     MOVF MODO, W ; Movemos el valor de estado en el que se encuentra
     BCF ((STATUS) and 07Fh), 2
-    XORLW 0 ; Lógica de XOR: val iguales activa ((STATUS) and 07Fh), 2 flag
+    XORLW 0
     BTFSC ((STATUS) and 07Fh), 2
     GOTO HORA ; Se pasa a modo hora donde se mostrará o editará
 
@@ -3743,6 +3769,7 @@ CLEAR_TIMER:
     BCF ((T2CON) and 07Fh), 2 ; Se apaga TMR2
 
     BCF PORTE, LED_FIN_T ; Se apaga alarma
+    BCF PORTE, BUZZER ; Se apaga buzzer
 
     CLRF BANDERA_TIMER ; Limpieza bandera
     CLRF CONT_TIMER ; Limpieza contadores
@@ -3943,7 +3970,7 @@ DISPLAY_TIMER_M:
 
     MOVLW 1 ; Restamos 1 para obtener cantidad de unidades
     SUBWF DIV2, F
-    INCF CENTENAS_TEMP; +1 unidad de minuto
+    INCF CENTENAS_TEMP ; +1 unidad de minuto
     BTFSC STATUS, 0 ; Se verifica si ocurrió BORROW (resultado aún mayor que 1)
     GOTO $-4 ; De ser así se continua restando
     DECF CENTENAS_TEMP
@@ -3963,7 +3990,8 @@ CONFIG_PINES:
 
     BANKSEL TRISA
     CLRF TRISA ; PORTA -> Output
-    CLRF TRISE
+    BCF TRISE, 0 ; ((PORTE) and 07Fh), 0 output
+    BCF TRISE, 1 ; ((PORTE) and 07Fh), 1 output
 
     BANKSEL TRISB ; Cambiamos de banco
     BSF TRISB, BT_UP ; ((PORTB) and 07Fh), 0 -((PORTB) and 07Fh), 4 como inputs
