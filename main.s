@@ -4,8 +4,11 @@
     Autor:		Javier Alejandro Pérez Marín 20183
     Compilador:		pic-as (v2.30), MPLABX V6.00
 
-    Programa:		
-    Hardware:		
+    Programa:		Reloj digital con 3 modos: reloj, fecha y temporizador
+    Hardware:		Led indicadores de modo en PORTA, botones de congiguración
+			del reloj en PORTB, 7 segmentos multiplexados en PORTC,
+			selector de displays en PORTD, led de alarma en PORTE
+			y buzzer en PORTE.
 
     Creado:			12/03/22
     Última modificación:	18/03/22	
