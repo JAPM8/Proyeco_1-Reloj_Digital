@@ -11,7 +11,7 @@
 			y buzzer en PORTE.
 
     Creado:			12/03/22
-    Última modificación:	18/03/22	
+    Última modificación:	22/03/22	
 */
 
 PROCESSOR 16F887
@@ -849,6 +849,9 @@ EDIT_HRS:
     CLRF    DISPLAY
     SEL_DISPLAY UNIDADES, DECENAS, CENTENAS, MILES	; Macro para configuración de displays (HORA:MINUTOS)
     
+    
+    CLRF    CONT_TMR_1			                ; Se reinicia la cuenta de segundos
+    
     MOVF    ST_SET, W	
     BTFSC   ZERO	      
     GOTO    HORA	      ; Se pasa a modo mostrar hora
@@ -1292,7 +1295,7 @@ INIT_TIMER:
     BCF	    ZERO
     XORLW   3		
     BTFSC   ZERO	      
-    GOTO    ALARMA_TIMER      ; Se pasa a detener del timer*/
+    GOTO    ALARMA_TIMER      ; Se pasa a activar alarma
     
     GOTO INIT_TIMER
  
@@ -1601,8 +1604,8 @@ CONFIG_RELOJ:
     
     ;Se modifican los bits 4 al 6 de OSCCON al valor de 110b para frecuencia de 4 MHz (IRCF=110b)
     BSF	    OSCCON, 6
-    BCF	    OSCCON, 5
-    BSF	    OSCCON, 4
+    BSF	    OSCCON, 5
+    BCF	    OSCCON, 4
     
     RETURN
 
